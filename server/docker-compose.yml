@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  server:
+    container_name: smsqr-server
+    image: avidian/smsqr
+    build: .
+    volumes:
+      - .:/home/node
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+    depends_on:
+      - database
+    networks:
+      - net
+    environment:
+      PORT: 8000
+      DB_URL: 'postgresql://postgres:secret@smsqr-db:5432/smsqr'
+  database:
+    container_name: smsqr-db
+    image: postgres:11.4
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: smsqr
+    volumes:
+      - smsqr-database:/var/lib/postgresql/data
+    ports:
+      - 2158:5432
+    networks:
+      - net
+networks:
+  net:
+    internal: false
+    driver: bridge
+
+volumes:
+  smsqr-database:
+    driver: local

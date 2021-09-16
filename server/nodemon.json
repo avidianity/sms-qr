@@ -1,0 +1,6 @@
+{
+    "events": {
+        "restart": "kill-port ${PORT:-5000} &> /dev/null",
+        "crash": "kill-port ${PORT:-5000} &> /dev/null"
+    }
+}

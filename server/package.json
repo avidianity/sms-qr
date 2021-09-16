@@ -1,0 +1,55 @@
+{
+	"name": "sms-qr-server",
+	"version": "1.0.0",
+	"description": "SMS QR Server",
+	"main": "dist/main.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/avidianity/sms-qr.git"
+	},
+	"bugs": {
+		"url": "https://github.com/avidianity/sms-qr/issues"
+	},
+	"scripts": {
+		"tsc": "tsc",
+		"build": "tsc",
+		"start": "node dist/main.js",
+		"start:dev": "nodemon src/main.ts",
+		"seed": "ts-node-dev src/seed.ts"
+	},
+	"author": "John Michael Manlupig",
+	"license": "GPL-3.0",
+	"private": false,
+	"dependencies": {
+		"@avidian/extras": "^1.0.0",
+		"@prisma/client": "3.0.2",
+		"@types/bcrypt": "^5.0.0",
+		"@types/express": "^4.17.13",
+		"@types/node": "^16.9.1",
+		"@types/uuid": "^8.3.1",
+		"bcrypt": "^5.0.1",
+		"chalk": "^4.1.2",
+		"cookie-parser": "^1.4.5",
+		"cors": "^2.8.5",
+		"dotenv": "^10.0.0",
+		"dotenv-expand": "^5.1.0",
+		"express": "^4.17.1",
+		"express-validator": "^6.12.1",
+		"jsonwebtoken": "^8.5.1",
+		"passport": "^0.4.1",
+		"passport-jwt": "^4.0.0",
+		"uuid": "^8.3.2"
+	},
+	"devDependencies": {
+		"@types/cookie-parser": "^1.4.2",
+		"@types/cors": "^2.8.12",
+		"@types/jsonwebtoken": "^8.5.5",
+		"@types/passport": "^1.0.7",
+		"@types/passport-jwt": "^3.0.6",
+		"kill-port": "^1.6.1",
+		"nodemon": "^2.0.12",
+		"prisma": "3.0.2",
+		"ts-node": "^10.2.1",
+		"typescript": "^4.4.3"
+	}
+}
