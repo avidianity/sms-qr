@@ -26,9 +26,6 @@ router.get('/', async (req, res) => {
             where: {
                 role: 'ADMIN',
             },
-            include: {
-                attendances: true,
-            },
         })
     );
 });
@@ -40,9 +37,6 @@ router.get('/:id', async (req, res) => {
         where: {
             id: req.params.id.toNumber(),
             role: 'ADMIN',
-        },
-        include: {
-            attendances: true,
         },
     });
 

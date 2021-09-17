@@ -53,6 +53,34 @@ router.get('/:id', async (req, res) => {
     return res.json(teacher);
 });
 
+router.get('/:id/attendances', async (req, res) => {
+    const client: PrismaClient = req.app.get('prisma');
+
+    const id = req.params.id.toNumber();
+
+    const teacher = await client.user.findFirst({
+        where: {
+            id,
+            role: 'TEACHER',
+        },
+        include: {
+            attendances: true,
+        },
+    });
+
+    if (!teacher) {
+        return res.status(404).json({ message: 'Teacher does not exist.' });
+    }
+
+    const attendances = await client.attendance.findMany({
+        where: {
+            userId: id,
+        },
+    });
+
+    return res.json(attendances);
+});
+
 router.post(
     '/',
     [

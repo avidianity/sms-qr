@@ -37,7 +37,7 @@ services:
       - net
   sms:
     container_name: smsqr-sms
-    image: avidian/semaphore-server:latest
+    image: avidian/semaphore-server:1.0.2
     restart: always
     ports:
       - 8585:8585
