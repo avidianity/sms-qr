@@ -17,7 +17,10 @@ router.post(
         body('email').isEmail().custom(unique<User>('user', 'email')),
         body('password').isStrongPassword(),
         body('name').isString().notEmpty(),
-        body('number').isString().notEmpty(),
+        body('number')
+            .isString()
+            .notEmpty()
+            .custom(unique<User>('user', 'number')),
     ],
     validate,
     async (req: Request, res: Response) => {
@@ -40,7 +43,7 @@ router.post(
             expiresIn: config('jwt.expiry'),
         });
 
-        return res.status(201).json({ token });
+        return res.status(201).json({ token, user });
     }
 );
 
@@ -71,7 +74,7 @@ router.post(
             }
         );
 
-        return res.status(201).json({ token });
+        return res.status(201).json({ token, user });
     }
 );
 

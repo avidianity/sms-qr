@@ -87,7 +87,10 @@ router.post(
         body('email').isEmail().custom(unique<User>('user', 'email')),
         body('password').isStrongPassword(),
         body('name').isString().notEmpty(),
-        body('number').isString().notEmpty(),
+        body('number')
+            .isString()
+            .notEmpty()
+            .custom(unique<User>('user', 'number')),
     ],
     validate,
     async (req: Request, res: Response) => {
@@ -119,7 +122,11 @@ function update() {
                 .optional(),
             body('password').isStrongPassword().optional(),
             body('name').isString().notEmpty().optional(),
-            body('number').isString().notEmpty().optional(),
+            body('number')
+                .isString()
+                .notEmpty()
+                .custom(unique<User>('user', 'number'))
+                .optional(),
         ],
         validate,
         async (req: Request, res: Response) => {
