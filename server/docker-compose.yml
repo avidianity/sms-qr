@@ -12,11 +12,15 @@ services:
     restart: unless-stopped
     depends_on:
       - database
+      - sms
     networks:
       - net
     environment:
       PORT: 8000
       DB_URL: 'postgresql://postgres:secret@smsqr-db:5432/smsqr'
+      SEMAPHORE_TOKEN: null
+      SEMAPHORE_DEV_SERVER: http://smsqr-sms:3535
+      SEMAPHORE_PROD_SERVER: https://api.semaphore.com/api/v4
   database:
     container_name: smsqr-db
     image: postgres:11.4
@@ -29,6 +33,15 @@ services:
       - smsqr-database:/var/lib/postgresql/data
     ports:
       - 2158:5432
+    networks:
+      - net
+  sms:
+    container_name: smsqr-sms
+    image: avidian/semaphore-server:latest
+    restart: always
+    ports:
+      - 8585:8585
+      - 3535:3535
     networks:
       - net
 networks:
