@@ -4,21 +4,16 @@ import dayjs from 'dayjs';
 import { Request, Response, Router } from 'express';
 import { body } from 'express-validator';
 import { config, Crypto } from '../helpers';
+import { admin } from '../middlewares/admin.middleware';
 import authenticate from '../middlewares/authenticate.middleware';
+import { teacher } from '../middlewares/teacher.middleware';
 import validate from '../middlewares/validation.middleware';
 
 const router = Router();
 
 router.use(authenticate());
-router.use((req, res, next) => {
-    if (req.user?.role !== 'ADMIN') {
-        return res.status(403).json({ message: 'User is not an admin.' });
-    }
 
-    return next();
-});
-
-router.get('/:id', async (req, res) => {
+router.get('/:id', teacher, async (req: Request, res: Response) => {
     const client: PrismaClient = req.app.get('prisma');
 
     const teacher = await client.user.findFirst({
@@ -44,6 +39,7 @@ router.get('/:id', async (req, res) => {
 
 router.post(
     '/parse',
+    admin,
     [body('payload').isString().notEmpty()],
     validate,
     async (req: Request, res: Response) => {
