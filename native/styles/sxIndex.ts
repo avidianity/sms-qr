@@ -9,9 +9,7 @@ export const indexStyles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent:'center'
+    flex: 1
   },
   transitionView: {
     flex: 1,

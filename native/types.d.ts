@@ -1,6 +1,5 @@
 export type LoginResponse = UserResponse | ErrorResponse
 export type Token = string
-
 export interface UserResponse {
   token: Token
   user: User

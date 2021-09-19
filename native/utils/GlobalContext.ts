@@ -1,11 +1,12 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext } from "react";
 import { Token, User } from "../types";
 
 export type GlobalContent = {
   user: Partial<User>
-  setUser(user:Partial<User>): void
+  setUser: React.Dispatch<React.SetStateAction<Partial<User>>>
   token: Token
-  setToken(user:Token): void
+  setToken: React.Dispatch<React.SetStateAction<string>>
 }
 
 export const GlobalContext = createContext<GlobalContent>({

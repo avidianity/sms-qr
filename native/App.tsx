@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ThemeProvider } from 'react-native-elements';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Text, ThemeProvider } from 'react-native-elements';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import { IndexScreen } from './screens';
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,6 +9,14 @@ import { GlobalContext } from './utils/GlobalContext';
 import { Token, User } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { LogBox } from 'react-native';
+import { ScanQRScreen } from './screens/scan';
+import { Register } from './components/Register';
+import { TeacherScreen } from './screens/teacher';
+import { getMe } from './queries/auth/me';
+import { AdminScreen } from './screens/admin';
+
+LogBox.ignoreLogs(['Setting a timer', 'React state update']);
 
 const theme = {
   Button: {
@@ -20,21 +28,50 @@ const theme = {
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient()
 
-export default function App() {
+export default function App(props:any) {
   let colorScheme = useColorScheme()
   const [token, setToken] = useState<Token>('')
   const [user, setUser] = useState<Partial<User>>({})
 
-  useEffect(()=>{
+  useEffect(()=> {
     (async ()=>{
+      let data = await getMe()
+      
+      if (data) {
+        setUser(data.data.user)
+        if (typeof data.data.token === 'string') {
+          setToken(data.data.token)
+        }
+      }
+    })()
+  }, [])
+
+  useEffect(()=>{
+    //Initialize global at start
+    async function SetGlobal() {
       const tmpToken = await AsyncStorage.getItem('token')
       const tmpUser = await AsyncStorage.getItem('user')
 
-      if (tmpToken) setToken(tmpToken)
-      else setToken('')
-
+      if (tmpToken && tmpToken.length > 0) setToken(tmpToken)
       if (tmpUser) setUser(JSON.parse(tmpUser))
-      else setUser({})
+    }
+
+    SetGlobal()
+  }, [])
+
+  useEffect(()=>{
+    (async ()=>{
+      if ( user && Object.keys(user)?.length > 0) {
+        await AsyncStorage.setItem('user', JSON.stringify(user))
+      }
+    })()
+  }, [user])
+
+  useEffect(()=> {
+    (async ()=> {
+      if (token?.length > 0) {
+        await AsyncStorage.setItem('token', token)
+      }
     })()
   }, [token])
 
@@ -45,12 +82,37 @@ export default function App() {
           <NavigationContainer>
             <QueryClientProvider client={queryClient}>
               <GlobalContext.Provider value={{token, setToken, user, setUser}}>
-                <Stack.Navigator>
+                <Stack.Navigator initialRouteName='Welcome'>
                   <Stack.Screen 
-                    name="Welcome to SMS-QR!"
+                    name="Welcome"
                     component={IndexScreen}
+                    options={{headerShown: false}}
+                  />
+                  <Stack.Screen
+                    name="Scan QR Code"
+                    component={ScanQRScreen}
                     options={{
-                      headerShown: !(token.length>0)
+                      headerStyle: {backgroundColor: 'orange'}
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Teacher"
+                    component={TeacherScreen}
+                    options={{headerShown: false}}
+                  />
+                  <Stack.Screen
+                    name="Admin"
+                    component={AdminScreen}
+                    options={{
+                      title: 'Administrator Dashboard',
+                      headerStyle: {backgroundColor: 'orange'}
+                    }}
+                  />
+                  <Stack.Screen
+                    name="Update"
+                    component={Register}
+                    options={{
+                      headerTitle: ''
                     }}
                   />
                 </Stack.Navigator>
@@ -61,4 +123,5 @@ export default function App() {
       </AppearanceProvider>
     </SafeAreaProvider>
   );
+
 }
