@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactChildren, ReactElement, useEffect, useState } from 'react';
 import { Login } from '../components/Login';
 import { Register } from '../components/Register';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -71,10 +71,15 @@ export function IndexScreen(props:any) {
   return <Splash />
 }
 
-function Splash() {
+interface ISplash {
+  children?: ReactElement
+}
+
+export function Splash({children}:ISplash) {
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
       <Icon name='people' size={64}/>
+      {children}
     </View>
   )
 }

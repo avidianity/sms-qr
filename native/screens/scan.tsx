@@ -1,12 +1,32 @@
+import { API_URI } from '@env';
+import axios from 'axios';
 import { BarCodeScannedCallback, BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
 import React, { useEffect, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native'
+import { Alert, StyleSheet, ToastAndroid, View } from 'react-native'
+import BarcodeMask from 'react-native-barcode-mask';
 import { Text } from 'react-native-elements';
+import { ScreenProps, ScreenStackProps } from 'react-native-screens';
+import { Splash } from '.';
+import { User } from '../types';
+import { useGlobalContext } from '../utils/GlobalContext';
 
-export function ScanQRScreen() {
+export interface Attendance {
+  createdAt: string
+  id: number
+  updatedAt: string
+  userId: number
+}
+
+export interface ParseResponse {
+  attendance: Attendance
+  teacher: User
+}
+
+export function ScanQRScreen(props:any) {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [scanned, setScanned] = useState(false);
+  const { token } = useGlobalContext();
 
   useEffect(() => {
     (async () => {
@@ -16,13 +36,15 @@ export function ScanQRScreen() {
   }, []);
 
   const handleBarCodeScanned:BarCodeScannedCallback = (res) => {
-    setScanned(true)
-    Alert.alert('Data', res.data, [
-      {
-        text: 'Ok',
-        onPress: () => setScanned(false)
-      }
-    ])
+    ToastAndroid.show(`Posting...`, ToastAndroid.SHORT)
+    axios.post<ParseResponse>(API_URI+'/qr/parse', {payload: res.data}, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+    }).then((res)=> {
+      ToastAndroid.show(`Successfully updated attendance for ${res.data.teacher.name}`, ToastAndroid.LONG)
+      props.navigation.goBack()
+    })
   }
 
   if (hasPermission) {
@@ -30,10 +52,12 @@ export function ScanQRScreen() {
     <BarCodeScanner
       onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
       style={styles.camera}
-    />
+    >
+      <BarcodeMask  />
+    </BarCodeScanner>
     )
   } else {
-    return <Text>No access to camera</Text>
+    return <Splash children={<Text style={{color: 'red'}}>Can't access camera!</Text>}/>
   }
 }
 

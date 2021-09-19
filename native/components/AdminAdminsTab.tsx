@@ -33,7 +33,7 @@ export function AdminAdminsTab({navigation}:IProps) {
         }
         <View style={{borderRadius: 8, height: 92}}>
           <Pressable
-            onPress={()=>navigation.navigate('Update', {method: 'add_teacher'})}
+            onPress={()=>navigation.navigate('Update', {method: 'add_admin'})}
             android_ripple={{color: '#18a86b', radius: 8}}
             style={{flex: 1, borderRadius: 8, backgroundColor: '#f373353', alignItems: 'center', justifyContent: 'center'}}
           >
