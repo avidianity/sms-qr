@@ -1,5 +1,10 @@
 import { env } from '../helpers';
+import { ConsoleLogger } from '../loggers/console.logger';
 
 export default {
-	channel: env('LOG_CHANNEL', 'console'),
+    channel: env('LOG_CHANNEL', 'console'),
+
+    drivers: {
+        console: ConsoleLogger,
+    },
 };

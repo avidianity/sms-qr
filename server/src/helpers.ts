@@ -1,11 +1,12 @@
 import { enc } from 'crypto-js';
+import { FilesystemInterface } from './interfaces/filesystem.interface';
 import { LoggerInterface } from './interfaces/logger.interface';
-import { ConsoleLogger } from './loggers/console.logger';
 
-export function registerLoggers(): any {
-    return {
-        console: ConsoleLogger,
-    };
+export function storage(): FilesystemInterface {
+    const driver = config('filesystem.driver');
+    const drivers = config(`filesystem.drivers`);
+
+    return new drivers[driver]();
 }
 
 export function env(name: string, defaultValue = '') {
@@ -25,7 +26,7 @@ export function config(name: string) {
 
 export function getLogger(): LoggerInterface {
     const className = config('logging.channel');
-    const loggers: any = registerLoggers();
+    const loggers = config('logging.loggers');
 
     return new loggers[className]();
 }

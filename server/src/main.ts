@@ -15,6 +15,7 @@ import { qrRoutes } from './routes/qr.route';
 import { hash } from 'bcrypt';
 import { v4 } from 'uuid';
 import { errorHandler } from './middlewares/error-handler.middleware';
+import { attendanceRoutes } from './routes/attendance.route';
 
 (async () => {
     const logger = getLogger();
@@ -66,6 +67,7 @@ import { errorHandler } from './middlewares/error-handler.middleware';
     app.use('/admins', adminRoutes);
     app.use('/teachers', teacherRoutes);
     app.use('/qr', qrRoutes);
+    app.use('/attendances', attendanceRoutes);
 
     app.use((_, res) => {
         return res.status(404).end();
