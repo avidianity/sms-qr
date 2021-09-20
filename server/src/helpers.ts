@@ -26,7 +26,7 @@ export function config(name: string) {
 
 export function getLogger(): LoggerInterface {
     const className = config('logging.channel');
-    const loggers = config('logging.loggers');
+    const loggers = config('logging.drivers');
 
     return new loggers[className]();
 }

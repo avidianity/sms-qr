@@ -61,11 +61,38 @@ router.post(
             return res.status(404).json({ message: 'Teacher does not exist.' });
         }
 
-        const attendance = await client.attendance.create({
-            data: {
+        const now = dayjs();
+
+        let attendance = await client.attendance.findFirst({
+            where: {
                 userId: teacher.id,
+                createdAt: {
+                    lte: now
+                        .set('hours', -16)
+                        .set('seconds', 0)
+                        .set('minutes', 0)
+                        .set('milliseconds', 0)
+                        .toDate(),
+                },
             },
         });
+
+        if (!attendance) {
+            attendance = await client.attendance.create({
+                data: {
+                    userId: teacher.id,
+                },
+            });
+        } else {
+            await client.attendance.update({
+                where: {
+                    id: attendance.id,
+                },
+                data: {
+                    updatedAt: new Date(),
+                },
+            });
+        }
 
         const env = config('app.env');
 
