@@ -13,13 +13,6 @@ const validation_middleware_1 = __importDefault(require("../middlewares/validati
 const unique_validator_1 = require("../validators/unique.validator");
 const router = (0, express_1.Router)();
 router.use((0, authenticate_middleware_1.default)());
-router.use((req, res, next) => {
-    var _a;
-    if (((_a = req.user) === null || _a === void 0 ? void 0 : _a.role) !== 'ADMIN') {
-        return res.status(403).json({ message: 'User is not an admin.' });
-    }
-    return next();
-});
 router.get('/', async (req, res) => {
     const client = req.app.get('prisma');
     return res.json(await client.user.findMany({

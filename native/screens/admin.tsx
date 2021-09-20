@@ -5,6 +5,8 @@ import { Button, SpeedDial, Text } from 'react-native-elements';
 import { AdminAdminsTab } from '../components/AdminAdminsTab';
 import { AdminTeachersTab } from '../components/AdminTeachersTab';
 import { FrontPageContainer } from '../components/FrontPageContainer';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../App';
 
 interface IProps {
   onLogout(): {}
@@ -14,7 +16,7 @@ interface IProps {
 const Tab = createMaterialTopTabNavigator();
 
 // Index3 is for admin
-export function AdminScreen (props:any) {
+export function AdminScreen (props:NativeStackScreenProps<RootStackParamList, 'Admin'>) {
   
   const [isDialOpen, setIsDialOpen] = useState(false)
 

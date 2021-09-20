@@ -1,4 +1,5 @@
 import { API_URI } from '@env';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import axios from 'axios';
 import { BarCodeScannedCallback, BarCodeScanner } from 'expo-barcode-scanner';
 import { Camera } from 'expo-camera';
@@ -8,6 +9,7 @@ import BarcodeMask from 'react-native-barcode-mask';
 import { Text } from 'react-native-elements';
 import { ScreenProps, ScreenStackProps } from 'react-native-screens';
 import { Splash } from '.';
+import { RootStackParamList } from '../App';
 import { User } from '../types';
 import { useGlobalContext } from '../utils/GlobalContext';
 
@@ -23,9 +25,10 @@ export interface ParseResponse {
   teacher: User
 }
 
-export function ScanQRScreen(props:any) {
+export function ScanQRScreen(props:NativeStackScreenProps<RootStackParamList, 'Scan QR Code'>) {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [scanned, setScanned] = useState(false);
+  const [posting, setPosting] = useState(false);
   const { token } = useGlobalContext();
 
   useEffect(() => {
@@ -37,14 +40,22 @@ export function ScanQRScreen(props:any) {
 
   const handleBarCodeScanned:BarCodeScannedCallback = (res) => {
     ToastAndroid.show(`Posting...`, ToastAndroid.SHORT)
-    axios.post<ParseResponse>(API_URI+'/qr/parse', {payload: res.data}, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-    }).then((res)=> {
-      ToastAndroid.show(`Successfully updated attendance for ${res.data.teacher.name}`, ToastAndroid.LONG)
-      props.navigation.goBack()
-    })
+    setPosting(true)
+    if (!posting) {
+      setTimeout(()=>{
+        // 1 second debounced
+        axios.post<ParseResponse>(API_URI+'/qr/parse', {payload: res.data}, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }).then((res)=> {
+          setPosting(false)
+          ToastAndroid.show(`Successfully updated attendance for ${res.data.teacher.name}`, ToastAndroid.LONG)
+          props.navigation.goBack()
+        })
+      }, 1000)
+    }
+    
   }
 
   if (hasPermission) {

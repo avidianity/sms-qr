@@ -14,15 +14,17 @@ import { useQuery } from 'react-query';
 import { getMe } from '../queries/auth/me';
 import { getQR } from '../queries/qr';
 import { Splash } from '.';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../App';
 
 //Index2 is for teachers
-export function TeacherScreen(props:any) {
+export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, 'Teacher'>) {
   const { user, token } = useGlobalContext()
 
-  const { data } = useQuery('teacher_qr', async () => await getQR(user, token))
+  const { data, isSuccess } = useQuery('teacher_qr', async () => await getQR(user, token), {refetchOnMount: false, refetchOnReconnect: false, refetchOnWindowFocus: false})
   const [isDialOpen, setIsDialOpen] = useState(false)
 
-  if (!user || data === null || data === undefined) {
+  if (data === null || data === undefined || !isSuccess) {
     return <Splash children={<Text>Loading QR..</Text>}/>
   }
 
@@ -96,12 +98,7 @@ export function TeacherScreen(props:any) {
           icon={{ name: 'visibility', color: '#fff' }}
           title="View Attendance"
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
-          onPress={()=>console.log('button')}
-          // onPress={() => setType(
-          //   type === Camera.Constants.Type.back
-          //     ? Camera.Constants.Type.front
-          //     : Camera.Constants.Type.back
-          // )}
+          onPress={()=>props.navigation.navigate('Attendance', {user})}
         />
       </SpeedDial>
 
