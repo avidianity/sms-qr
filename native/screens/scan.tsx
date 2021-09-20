@@ -39,9 +39,10 @@ export function ScanQRScreen(props:NativeStackScreenProps<RootStackParamList, 'S
   }, []);
 
   const handleBarCodeScanned:BarCodeScannedCallback = (res) => {
-    ToastAndroid.show(`Posting...`, ToastAndroid.SHORT)
-    setPosting(true)
     if (!posting) {
+      ToastAndroid.show(`Posting...`, ToastAndroid.SHORT)
+      setPosting(true)
+
       setTimeout(()=>{
         // 1 second debounced
         axios.post<ParseResponse>(API_URI+'/qr/parse', {payload: res.data}, {

@@ -14,7 +14,7 @@ interface IProps {
 
 export function UserCard({user, navigation}:IProps) {
   const [visible, setVisible] = useState(false);
-  const roleString = `${CapitalizeFirstLetter(user.role.toLowerCase())}`
+  const roleString = CapitalizeFirstLetter(user.role.toLowerCase())
   const [avatarColor] = useState(randomColor({luminosity: 'dark'}))
 
   const toggleOverlay = () => {
@@ -26,6 +26,18 @@ export function UserCard({user, navigation}:IProps) {
       <Overlay isVisible={visible} onBackdropPress={toggleOverlay} overlayStyle={{width: '80%'}}>
         <Text style={{fontWeight: 'bold',textAlign:'center', fontSize: 18}}>{user.name}'s Options</Text>
         <View style={{marginTop: 12}}>
+          {
+            user.role === 'TEACHER' && <Fragment>
+              <Button
+                title={`View Attendance`}
+                containerStyle={{marginBottom: 8}}
+                onPress={()=>navigation.navigate('Attendance', {user})}
+                icon={<Icon name="settings" size={24} color="white"/>}
+                buttonStyle={{paddingVertical: 16}}
+              />
+            </Fragment>
+          }
+          
           <Button
             title={`Update ${roleString}`}
             containerStyle={{marginBottom: 8}}
