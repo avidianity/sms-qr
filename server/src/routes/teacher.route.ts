@@ -7,6 +7,7 @@ import authenticate from '../middlewares/authenticate.middleware';
 import { teacher } from '../middlewares/teacher.middleware';
 import validate from '../middlewares/validation.middleware';
 import { unique } from '../validators/unique.validator';
+import 'express-async-errors';
 
 const router = Router();
 

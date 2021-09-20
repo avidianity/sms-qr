@@ -14,6 +14,7 @@ import { teacherRoutes } from './routes/teacher.route';
 import { qrRoutes } from './routes/qr.route';
 import { hash } from 'bcrypt';
 import { v4 } from 'uuid';
+import { errorHandler } from './middlewares/error-handler.middleware';
 
 (async () => {
     const logger = getLogger();
@@ -69,6 +70,8 @@ import { v4 } from 'uuid';
     app.use((_, res) => {
         return res.status(404).end();
     });
+
+    app.use(errorHandler);
 
     app.listen(port, () => {
         logger.success(`Server listening at ${port}`);

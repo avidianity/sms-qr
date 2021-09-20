@@ -8,6 +8,7 @@ import { body } from 'express-validator';
 import validate from '../middlewares/validation.middleware';
 import authenticate from '../middlewares/authenticate.middleware';
 import { unique } from '../validators/unique.validator';
+import 'express-async-errors';
 
 const router = Router();
 

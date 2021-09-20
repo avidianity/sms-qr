@@ -8,6 +8,7 @@ import { admin } from '../middlewares/admin.middleware';
 import authenticate from '../middlewares/authenticate.middleware';
 import { teacher } from '../middlewares/teacher.middleware';
 import validate from '../middlewares/validation.middleware';
+import 'express-async-errors';
 
 const router = Router();
 
