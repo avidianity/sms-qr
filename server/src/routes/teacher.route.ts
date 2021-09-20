@@ -4,6 +4,7 @@ import { Request, Response, Router } from 'express';
 import { body } from 'express-validator';
 import { v4 } from 'uuid';
 import authenticate from '../middlewares/authenticate.middleware';
+import { teacher } from '../middlewares/teacher.middleware';
 import validate from '../middlewares/validation.middleware';
 import { unique } from '../validators/unique.validator';
 import 'express-async-errors';
@@ -11,13 +12,6 @@ import 'express-async-errors';
 const router = Router();
 
 router.use(authenticate());
-router.use((req, res, next) => {
-    if (req.user?.role !== 'ADMIN') {
-        return res.status(403).json({ message: 'User is not an admin.' });
-    }
-
-    return next();
-});
 
 router.get('/', async (req, res) => {
     const client: PrismaClient = req.app.get('prisma');

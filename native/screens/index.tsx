@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactChildren, ReactElement, useEffect, useState } from 'react';
 import { Login } from '../components/Login';
 import { Register } from '../components/Register';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -9,29 +9,18 @@ import { Icon, Text } from 'react-native-elements';
 import { View } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AxiosResponse } from 'axios';
-import { UserResponse } from '../types';
+import { User, UserResponse } from '../types';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../App';
 
 const Tab = createMaterialTopTabNavigator();
 
-type IndexMethods = 'logout'
-
-export function IndexScreen(props:any) {
+export function IndexScreen(props:NativeStackScreenProps<RootStackParamList, 'Welcome'>) {
 
   const method = props?.route?.params?.method
   const { token, setToken, setUser, user } = useGlobalContext()
 
-  const [data, setData] = useState<AxiosResponse<UserResponse>>()
-
-  useEffect(()=>{
-    (
-      async () => {
-        const res = await getMe()
-
-        if (res !== null && res !== undefined)
-          setData(res)
-      }
-    )()
-  }, [method, token])
+  const [data, setData] = useState<AxiosResponse<UserResponse> | null>()
 
   useEffect(()=>{
     if (method === 'logout') {
@@ -54,12 +43,26 @@ export function IndexScreen(props:any) {
   useEffect(() =>{
     if (data?.data.token) setToken(data?.data.token)
     if (data?.data.user) setUser(data?.data.user)
+    
+    async function reroute() {
+      const res = await getMe()
+        if (res !== null && res !== undefined)
+          setData(res);
+      
+      const asUser = await AsyncStorage.getItem('user')
 
-    if (data?.data.user.role === 'TEACHER') props.navigation.reset({index: 0, routes: [{ name: 'Teacher'}]})
-    else if (data?.data.user.role === 'ADMIN') props.navigation.reset({index: 0, routes: [{ name: 'Admin'}]})
-  }, [data])
+      if (typeof asUser === null || asUser === null) return
 
-  if (token.length === 0) {
+      const parsedUser:User = JSON.parse(asUser)
+
+      if (parsedUser.role === 'TEACHER') props.navigation.reset({index: 0, routes: [{ name: 'Teacher'}]})
+      else if (parsedUser.role === 'ADMIN') props.navigation.reset({index: 0, routes: [{ name: 'Admin'}]})
+    }
+
+    reroute()
+  }, [data, token, user])
+
+  if (token.length === 0 || data === null) {
     return (
       <Tab.Navigator screenOptions={{tabBarStyle:{display:'none'}}}>
         <Tab.Screen name='Login' component={Login}/>
@@ -68,13 +71,18 @@ export function IndexScreen(props:any) {
     )
   }
 
-  return <Splash />
+  return <Splash children={<Text>Please wait...</Text>} />
 }
 
-function Splash() {
+interface ISplash {
+  children?: ReactElement
+}
+
+export function Splash({children}:ISplash) {
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
       <Icon name='people' size={64}/>
+      {children}
     </View>
   )
 }

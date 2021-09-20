@@ -15,7 +15,7 @@ interface IProps {
 export function UserCard({user, navigation}:IProps) {
   const [visible, setVisible] = useState(false);
   const roleString = `${CapitalizeFirstLetter(user.role.toLowerCase())}`
-  const [avatarColor] = useState(randomColor())
+  const [avatarColor] = useState(randomColor({luminosity: 'dark'}))
 
   const toggleOverlay = () => {
     setVisible(!visible);

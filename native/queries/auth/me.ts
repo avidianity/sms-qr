@@ -18,7 +18,8 @@ export async function getMe() {
     return get
   } catch (err) {
     // Clear storage if invalid auth
-    await AsyncStorage.removeItem('token')
-    await AsyncStorage.removeItem('user')
+    await AsyncStorage.multiRemove(['token, user'])
   }
+
+  return null
 }

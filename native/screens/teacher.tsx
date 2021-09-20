@@ -12,14 +12,20 @@ import { SpeedDial } from 'react-native-elements';
 import QRCode from 'react-qr-code';
 import { useQuery } from 'react-query';
 import { getMe } from '../queries/auth/me';
+import { getQR } from '../queries/qr';
+import { Splash } from '.';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../App';
 
 //Index2 is for teachers
-export function TeacherScreen(props:any) {
-  const { user } = useGlobalContext()
+export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, 'Teacher'>) {
+  const { user, token } = useGlobalContext()
+
+  const { data, isSuccess } = useQuery('teacher_qr', async () => await getQR(user, token), {refetchOnMount: false, refetchOnReconnect: false, refetchOnWindowFocus: false})
   const [isDialOpen, setIsDialOpen] = useState(false)
 
-  if (!user) {
-    return <Text>Loading</Text>
+  if (data === null || data === undefined || !isSuccess) {
+    return <Splash children={<Text>Loading QR..</Text>}/>
   }
 
   const handleLogout = async () => {
@@ -31,7 +37,7 @@ export function TeacherScreen(props:any) {
       <StatusBar backgroundColor='#f37335' style='light' />
       <FrontPageContainer bg={0} onSafeArea>
         {/* Header */}
-        <View style={{backgroundColor: '#f37335', padding: 12}}>
+        <View style={{backgroundColor: '#f37335', padding: 24}}>
           <View style={{flexDirection: 'row', marginBottom:24}}>
             <View style={{marginRight: 12}}>
               <Avatar 
@@ -56,8 +62,8 @@ export function TeacherScreen(props:any) {
         <View style={{
           alignItems: 'center',
           justifyContent: 'center',
-          margin: 24,
-          padding: 16,
+          marginHorizontal: 24,
+          paddingVertical: 24,
           backgroundColor: 'white',
           borderRadius: 24,
           shadowColor: "#000",
@@ -68,9 +74,9 @@ export function TeacherScreen(props:any) {
           shadowOpacity: 0.25,
           shadowRadius: 3.84,
           elevation: 5,
-          flex: .8
+          // flex: .8
         }}>
-          <QRCode value={'ang cute ni aczell'}/>
+          <QRCode value={data.data}/>
         </View>
       </FrontPageContainer>
 
@@ -89,15 +95,10 @@ export function TeacherScreen(props:any) {
           onPress={handleLogout}
         />
         <SpeedDial.Action
-          icon={{ name: 'flip', color: '#fff' }}
-          title="Flip Camera"
+          icon={{ name: 'visibility', color: '#fff' }}
+          title="View Attendance"
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
-          onPress={()=>console.log('button')}
-          // onPress={() => setType(
-          //   type === Camera.Constants.Type.back
-          //     ? Camera.Constants.Type.front
-          //     : Camera.Constants.Type.back
-          // )}
+          onPress={()=>props.navigation.navigate('Attendance', {user})}
         />
       </SpeedDial>
 

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import {  Alert, View } from 'react-native';
 import { Button, Input, Text } from 'react-native-elements';
 import { formStyles } from '../styles/sxForm';
@@ -13,6 +13,10 @@ import { useGlobalContext } from '../utils/GlobalContext';
 import { phoneRegExp, strongPasswordExp } from '../utils/regex';
 import axios, { AxiosResponse } from 'axios';
 import { StatusBar } from 'expo-status-bar';
+import PhoneInput from 'react-native-phone-number-input';
+import {CountryCode} from 'react-native-phone-number-input/node_modules/react-native-country-picker-modal'
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../App';
 
 const passwordShape = yup
 .string()
@@ -30,7 +34,7 @@ const registerValidationSchema = yup.object().shape({
     )
   }),
   name: yup.string().required('Name is required.'),
-  number: yup.string().min(11).max(12).matches(phoneRegExp, 'Phone number is not valid.')
+  number: yup.string().length(10)
 })
 
 const updateValidationSchema = yup.object().shape({
@@ -44,12 +48,13 @@ const updateValidationSchema = yup.object().shape({
     )
   }),
   name: yup.string(),
-  number: yup.string().min(11).max(12).matches(phoneRegExp, 'Phone number is not valid.')
+  number: yup.string().length(10)
 })
 
-type Methods = 'add_teacher'
+type Methods = 'add_teacher' | 'add_admin'
 
-export function Register(props:any) {
+export function Register(props:NativeStackScreenProps<RootStackParamList, 'Update'>) {
+  const [countryCode, setCountryCode] = useState<CountryCode>('PH')
 
   let user:User= props?.route?.params?.user || {}
   let method:Methods = props?.route?.params?.method
@@ -67,6 +72,7 @@ export function Register(props:any) {
           <Text style={formStyles.header}>{
            hasUser ? 'Update Account' :
            method === 'add_teacher' ? 'Add Teacher' :
+           method === 'add_admin' ? 'Add Admin' :
            'Create Account'
           }</Text>
           <View style={formStyles.form}>
@@ -93,8 +99,9 @@ export function Register(props:any) {
                   }
                 })
 
-                console.log(tmpValues)
-
+                //transform number into 11 digit
+                if (tmpValues.number) tmpValues.number = '0' + tmpValues['number']
+                console.log(tmpValues.number)
                 if (hasUser) {
                   request = axios.put(API_URI+'/teachers/'+user.id, tmpValues, {
                     headers: {'Authorization': `Bearer ${token}`}
@@ -102,6 +109,11 @@ export function Register(props:any) {
                 }
                 else if (hasMethod && method === 'add_teacher') {
                   request = axios.post(API_URI+'/teachers', tmpValues, {
+                    headers: {'Authorization': `Bearer ${token}`}
+                  })
+                }
+                else if (hasMethod && method === 'add_admin') {
+                  request = axios.post(API_URI+'/admins', tmpValues, {
                     headers: {'Authorization': `Bearer ${token}`}
                   })
                 }
@@ -125,18 +137,16 @@ export function Register(props:any) {
                   }
                   setSubmitting(false)
                 }).catch((err:Error)=> {
-                  if (ENV === 'dev') {
-                    Alert.alert(
-                      "DEV | " + err.name,
-                      err.message, [{
-                        text: 'Cancel',
-                        style: 'cancel'
-                      }], {
-                        cancelable: true
-                      }
-                    )
-                    setSubmitting(false)
-                  }
+                  Alert.alert(
+                    "DEV | " + err.name,
+                    err.stack, [{
+                      text: 'Cancel',
+                      style: 'cancel'
+                    }], {
+                      cancelable: true
+                    }
+                  )
+                  setSubmitting(false)
                 })
               }}
             >
@@ -189,16 +199,14 @@ export function Register(props:any) {
                     {
                       errors.number && <Text style={formStyles.errorText}>{CapitalizeFirstLetter(errors.number)}</Text>
                     }
-                    <Input
+                    <PhoneInput
                       placeholder='Phone Number'
                       value={values.number}
-                      onBlur={handleBlur('number')}
                       onChangeText={handleChange('number')}
                       disabled={isSubmitting}
+                      defaultCode={countryCode}
+                      containerStyle={{marginBottom: 12}}
                     />
-                  
-
-                  
                   <Button
                     title={
                       hasUser ? "Update" :
@@ -216,6 +224,7 @@ export function Register(props:any) {
                         <Button 
                           title="Login"
                           type='clear'
+                          //@ts-expect-error
                           onPress={()=>props.navigation.navigate('Login')}
                           disabled={isSubmitting}
                         />

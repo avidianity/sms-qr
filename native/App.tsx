@@ -15,6 +15,7 @@ import { Register } from './components/Register';
 import { TeacherScreen } from './screens/teacher';
 import { getMe } from './queries/auth/me';
 import { AdminScreen } from './screens/admin';
+import { AttendanceScreen } from './screens/attendances';
 
 LogBox.ignoreLogs(['Setting a timer', 'React state update']);
 
@@ -115,6 +116,10 @@ export default function App(props:any) {
                       headerTitle: ''
                     }}
                   />
+                  <Stack.Screen
+                    name="Attendance"
+                    component={AttendanceScreen}
+                  />
                 </Stack.Navigator>
               </GlobalContext.Provider>
             </QueryClientProvider>
@@ -124,4 +129,16 @@ export default function App(props:any) {
     </SafeAreaProvider>
   );
 
+}
+
+export type RootStackParamList = {
+  Welcome: {method: 'logout'}
+  Attendance: {user: Partial<User>}
+  Teacher: undefined
+  Admin: undefined
+  'Scan QR Code': undefined
+  Update: {
+    method: 'add_teacher' | 'add_admin'
+    user: User
+  }
 }
