@@ -11,5 +11,5 @@ export function errorHandler(
 ) {
     logger.error(error.message);
 
-    return res.status(error.status || 500).json(error);
+    return res.status(error.status || 500).json(error.toObject());
 }
