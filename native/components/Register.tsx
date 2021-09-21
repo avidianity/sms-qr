@@ -62,7 +62,7 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
   const hasUser = Object.keys(user).length > 0
   const hasMethod = method?.length > 0
 
-  const { token, setUser, setToken } = useGlobalContext()
+  const { token, setUser, setToken } = useGlobalContext(props)
 
   return (
     <FrontPageContainer bg={1}>

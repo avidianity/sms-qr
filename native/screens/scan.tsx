@@ -29,7 +29,7 @@ export function ScanQRScreen(props:NativeStackScreenProps<RootStackParamList, 'S
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [scanned, setScanned] = useState(false);
   const [posting, setPosting] = useState(false);
-  const { token } = useGlobalContext();
+  const { token } = useGlobalContext(props);
 
   useEffect(() => {
     (async () => {

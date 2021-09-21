@@ -13,6 +13,7 @@ const admin_middleware_1 = require("../middlewares/admin.middleware");
 const authenticate_middleware_1 = __importDefault(require("../middlewares/authenticate.middleware"));
 const teacher_middleware_1 = require("../middlewares/teacher.middleware");
 const validation_middleware_1 = __importDefault(require("../middlewares/validation.middleware"));
+require("express-async-errors");
 const router = (0, express_1.Router)();
 router.use((0, authenticate_middleware_1.default)());
 router.get('/:id', teacher_middleware_1.teacher, async (req, res) => {
@@ -46,11 +47,37 @@ router.post('/parse', admin_middleware_1.admin, [(0, express_validator_1.body)('
     if (!teacher) {
         return res.status(404).json({ message: 'Teacher does not exist.' });
     }
-    const attendance = await client.attendance.create({
-        data: {
+    const now = (0, dayjs_1.default)();
+    let attendance = await client.attendance.findFirst({
+        where: {
             userId: teacher.id,
+            createdAt: {
+                lte: now
+                    .set('hours', -16)
+                    .set('seconds', 0)
+                    .set('minutes', 0)
+                    .set('milliseconds', 0)
+                    .toDate(),
+            },
         },
     });
+    if (!attendance) {
+        attendance = await client.attendance.create({
+            data: {
+                userId: teacher.id,
+            },
+        });
+    }
+    else {
+        await client.attendance.update({
+            where: {
+                id: attendance.id,
+            },
+            data: {
+                updatedAt: new Date(),
+            },
+        });
+    }
     const env = (0, helpers_1.config)('app.env');
     const admins = await client.user.findMany({
         where: {

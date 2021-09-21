@@ -1,3 +1,4 @@
+import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs'
 import React from 'react'
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native'
 import { Text } from 'react-native-elements'
@@ -8,12 +9,9 @@ import { getTeachers } from '../queries/teachers'
 import { useGlobalContext } from '../utils/GlobalContext'
 import { UserCard } from './UserCard'
 
-interface IProps {
-  navigation : any
-}
 
-export function AdminTeachersTab({navigation}:IProps) {
-  const { token } = useGlobalContext()
+export function AdminTeachersTab(props:MaterialTopTabBarProps) {
+  const { token } = useGlobalContext(props)
 
   const { data,isLoading,refetch } = useQuery('teachers', async ()=> getTeachers(token), {
     refetchOnWindowFocus: true
@@ -30,11 +28,11 @@ export function AdminTeachersTab({navigation}:IProps) {
         }
       >
         {
-          data?.data.map((user, key)=><UserCard user={user} key={key} navigation={navigation}/>)
+          data?.data.map((user, key)=><UserCard refetch={refetch} token={token} user={user} key={key} navigation={props.navigation}/>)
         }
         <View style={{borderRadius: 8, height: 92}}>
           <Pressable
-            onPress={()=>navigation.navigate('Update', {method: 'add_teacher'})}
+            onPress={()=>props.navigation.navigate('Update', {method: 'add_teacher'})}
             android_ripple={{color: '#18a86b', radius: 8}}
             style={{flex: 1, borderRadius: 8, backgroundColor: '#f373353', alignItems: 'center', justifyContent: 'center'}}
           >

@@ -4,15 +4,19 @@ import { Avatar, Icon, Overlay, Text, Button } from 'react-native-elements'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Card } from 'react-native-elements/dist/card/Card'
 import { AvatarText, CapitalizeFirstLetter } from '../../utils/string';
-import { View, SectionList } from 'react-native';
+import { View, SectionList, ToastAndroid } from 'react-native';
 import randomColor from 'randomcolor';
+import axios from 'axios';
+import { API_URI } from '@env';
 
 interface IProps {
   user: User
   navigation: any
+  token: string
+  refetch():void
 }
 
-export function UserCard({user, navigation}:IProps) {
+export function UserCard({user, token, navigation,refetch}:IProps) {
   const [visible, setVisible] = useState(false);
   const roleString = CapitalizeFirstLetter(user.role.toLowerCase())
   const [avatarColor] = useState(randomColor({luminosity: 'dark'}))
@@ -47,7 +51,17 @@ export function UserCard({user, navigation}:IProps) {
           />
           <Button
             title={`Delete ${roleString}`}
-            onPress={()=>console.log('delete')}
+            onPress={()=>{
+              axios.delete(`${API_URI}/${user.role}s/${user.id}`, {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              }).then((res)=>{
+                ToastAndroid.show(`Succcessfully deleted ${user.role.toLowerCase()} ${user.name}.`, ToastAndroid.LONG);
+                setVisible(false);
+                refetch();
+              })
+            }}
             icon={<Icon name="delete" size={24} color="white"/>}
             buttonStyle={{backgroundColor:'red', paddingVertical: 16}}
           />

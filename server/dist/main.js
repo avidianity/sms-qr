@@ -38,6 +38,8 @@ const teacher_route_1 = require("./routes/teacher.route");
 const qr_route_1 = require("./routes/qr.route");
 const bcrypt_1 = require("bcrypt");
 const uuid_1 = require("uuid");
+const error_handler_middleware_1 = require("./middlewares/error-handler.middleware");
+const attendance_route_1 = require("./routes/attendance.route");
 (async () => {
     const logger = (0, helpers_1.getLogger)();
     const app = (0, express_1.default)();
@@ -73,9 +75,11 @@ const uuid_1 = require("uuid");
     app.use('/admins', admin_route_1.adminRoutes);
     app.use('/teachers', teacher_route_1.teacherRoutes);
     app.use('/qr', qr_route_1.qrRoutes);
+    app.use('/attendances', attendance_route_1.attendanceRoutes);
     app.use((_, res) => {
         return res.status(404).end();
     });
+    app.use(error_handler_middleware_1.errorHandler);
     app.listen(port, () => {
         logger.success(`Server listening at ${port}`);
     });

@@ -1,14 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Crypto = exports.getLogger = exports.config = exports.env = exports.registerLoggers = void 0;
+exports.Crypto = exports.getLogger = exports.config = exports.env = exports.storage = void 0;
 const crypto_js_1 = require("crypto-js");
-const console_logger_1 = require("./loggers/console.logger");
-function registerLoggers() {
-    return {
-        console: console_logger_1.ConsoleLogger,
-    };
+function storage() {
+    const driver = config('filesystem.driver');
+    const drivers = config(`filesystem.drivers`);
+    return new drivers[driver]();
 }
-exports.registerLoggers = registerLoggers;
+exports.storage = storage;
 function env(name, defaultValue = '') {
     const value = process.env[name];
     return value || defaultValue;
@@ -24,7 +23,7 @@ function config(name) {
 exports.config = config;
 function getLogger() {
     const className = config('logging.channel');
-    const loggers = registerLoggers();
+    const loggers = config('logging.drivers');
     return new loggers[className]();
 }
 exports.getLogger = getLogger;

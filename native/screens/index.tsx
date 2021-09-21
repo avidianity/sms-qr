@@ -18,7 +18,7 @@ const Tab = createMaterialTopTabNavigator();
 export function IndexScreen(props:NativeStackScreenProps<RootStackParamList, 'Welcome'>) {
 
   const method = props?.route?.params?.method
-  const { token, setToken, setUser, user } = useGlobalContext()
+  const { token, setToken, setUser, user } = useGlobalContext(props)
 
   const [data, setData] = useState<AxiosResponse<UserResponse> | null>()
 

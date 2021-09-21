@@ -32,6 +32,7 @@ export function AttendanceScreen(props:NativeStackScreenProps<RootStackParamList
   const handleDayPress = (date:DateObject) => {
     console.log('pressed day: ' + date.dateString)
   }
+  
   useEffect(()=> {
     setDates(()=> {
 

@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginResponse, UserResponse } from '../types';
 import { useGlobalContext } from '../utils/GlobalContext';
 import { StatusBar } from 'expo-status-bar';
+import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 
 const loginValidationSchema = yup.object().shape({
   email: yup.string().email().required('Email is required.'),
@@ -18,8 +19,8 @@ const loginValidationSchema = yup.object().shape({
 })
 
 
-export function Login(props:any) {
-  const { setUser, setToken } = useGlobalContext()
+export function Login(props:MaterialTopTabBarProps) {
+  const { setUser, setToken } = useGlobalContext(props)
   return (
     <FrontPageContainer bg={0}>
       <StatusBar style='dark' />

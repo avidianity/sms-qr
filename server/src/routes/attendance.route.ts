@@ -10,12 +10,20 @@ import { admin } from '../middlewares/admin.middleware';
 
 const router = Router();
 
-router.use(authenticate());
+// router.use(authenticate());
 
-router.get('/teachers', admin, async (req: Request, res: Response) => {
+router.get('/:uuid/attendance.xlsx', async (req: Request, res: Response) => {
     const client: PrismaClient = req.app.get('prisma');
 
-    const user = req.user!;
+    const user = await client.user.findFirst({
+        where: {
+            uuid: req.params.uuid
+        }
+    })
+
+    if (user === null || user.role !== 'ADMIN') {
+        return res.status(401).send({message: 'Unauthorized.'});
+    }
 
     const start = dayjs().set('date', 1).toDate();
     const end = new Date(start.getFullYear(), start.getMonth() + 1, 0);

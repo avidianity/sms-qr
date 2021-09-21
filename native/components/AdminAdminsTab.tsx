@@ -1,3 +1,4 @@
+import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs'
 import React from 'react'
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native'
 import { Text } from 'react-native-elements'
@@ -7,12 +8,9 @@ import { getAdmins } from '../queries/admins'
 import { useGlobalContext } from '../utils/GlobalContext'
 import { UserCard } from './UserCard'
 
-interface IProps {
-  navigation : any
-}
 
-export function AdminAdminsTab({navigation}:IProps) {
-  const { token } = useGlobalContext()
+export function AdminAdminsTab(props:MaterialTopTabBarProps) {
+  const { token } = useGlobalContext(props)
 
   const { data,isLoading,refetch } = useQuery('admins', async ()=> getAdmins(token), {
     refetchOnWindowFocus: true
@@ -29,11 +27,11 @@ export function AdminAdminsTab({navigation}:IProps) {
         }
       >
         {
-          data?.data.map((user, key)=><UserCard user={user} key={key} navigation={navigation}/>)
+          data?.data.map((user, key)=><UserCard refetch={refetch} token={token} user={user} key={key} navigation={props.navigation}/>)
         }
         <View style={{borderRadius: 8, height: 92}}>
           <Pressable
-            onPress={()=>navigation.navigate('Update', {method: 'add_admin'})}
+            onPress={()=>props.navigation.navigate('Update', {method: 'add_admin'})}
             android_ripple={{color: '#18a86b', radius: 8}}
             style={{flex: 1, borderRadius: 8, backgroundColor: '#f373353', alignItems: 'center', justifyContent: 'center'}}
           >

@@ -1,12 +1,12 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { Fragment, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Button, SpeedDial, Text } from 'react-native-elements';
+import { SpeedDial } from 'react-native-elements';
 import { AdminAdminsTab } from '../components/AdminAdminsTab';
 import { AdminTeachersTab } from '../components/AdminTeachersTab';
-import { FrontPageContainer } from '../components/FrontPageContainer';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../App';
+import { useDownloadAttendance } from '../components/UseDownloadAttendance';
 
 interface IProps {
   onLogout(): {}
@@ -17,8 +17,8 @@ const Tab = createMaterialTopTabNavigator();
 
 // Index3 is for admin
 export function AdminScreen (props:NativeStackScreenProps<RootStackParamList, 'Admin'>) {
-  
-  const [isDialOpen, setIsDialOpen] = useState(false)
+  const {DownloadAttendance} = useDownloadAttendance(props)
+  const [isDialOpen, setIsDialOpen] = useState(false);
 
   return (
     <Fragment>
@@ -51,6 +51,12 @@ export function AdminScreen (props:NativeStackScreenProps<RootStackParamList, 'A
           title="Scan QR Code"
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
           onPress={()=>props.navigation.navigate('Scan QR Code')}
+        />
+        <SpeedDial.Action
+          icon={{ name: 'description', color: '#fff' }}
+          title="Download Monthly Attendance Sheet"
+          buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
+          onPress={DownloadAttendance}
         />
       </SpeedDial>
     </Fragment>

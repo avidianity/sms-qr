@@ -11,6 +11,7 @@ const uuid_1 = require("uuid");
 const authenticate_middleware_1 = __importDefault(require("../middlewares/authenticate.middleware"));
 const validation_middleware_1 = __importDefault(require("../middlewares/validation.middleware"));
 const unique_validator_1 = require("../validators/unique.validator");
+require("express-async-errors");
 const router = (0, express_1.Router)();
 router.use((0, authenticate_middleware_1.default)());
 router.get('/', async (req, res) => {

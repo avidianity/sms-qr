@@ -13,6 +13,7 @@ const express_validator_1 = require("express-validator");
 const validation_middleware_1 = __importDefault(require("../middlewares/validation.middleware"));
 const authenticate_middleware_1 = __importDefault(require("../middlewares/authenticate.middleware"));
 const unique_validator_1 = require("../validators/unique.validator");
+require("express-async-errors");
 const router = (0, express_1.Router)();
 router.post('/register', [
     (0, express_validator_1.body)('email').isEmail().custom((0, unique_validator_1.unique)('user', 'email')),

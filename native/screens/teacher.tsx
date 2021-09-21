@@ -19,7 +19,7 @@ import { RootStackParamList } from '../App';
 
 //Index2 is for teachers
 export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, 'Teacher'>) {
-  const { user, token } = useGlobalContext()
+  const { user, token } = useGlobalContext(props)
 
   const { data, isSuccess } = useQuery('teacher_qr', async () => await getQR(user, token), {refetchOnMount: false, refetchOnReconnect: false, refetchOnWindowFocus: false})
   const [isDialOpen, setIsDialOpen] = useState(false)
