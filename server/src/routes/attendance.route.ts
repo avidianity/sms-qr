@@ -17,12 +17,12 @@ router.get('/:uuid/attendance.xlsx', async (req: Request, res: Response) => {
 
     const user = await client.user.findFirst({
         where: {
-            uuid: req.params.uuid
-        }
-    })
+            uuid: req.params.uuid,
+        },
+    });
 
     if (user === null || user.role !== 'ADMIN') {
-        return res.status(401).send({message: 'Unauthorized.'});
+        return res.status(401).send({ message: 'Unauthorized.' });
     }
 
     const start = dayjs().set('date', 1).toDate();
@@ -171,7 +171,9 @@ router.get('/:uuid/attendance.xlsx', async (req: Request, res: Response) => {
                         },
                     },
                 };
-                absents++;
+                if (!isWeekend) {
+                    absents++;
+                }
             }
         });
 
