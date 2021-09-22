@@ -11,7 +11,7 @@ import { ScreenProps, ScreenStackProps } from 'react-native-screens';
 import { Splash } from '.';
 import { RootStackParamList } from '../App';
 import { User } from '../types';
-import { useGlobalContext } from '../utils/GlobalContext';
+import { useAuth } from '../utils/GlobalContext';
 
 export interface Attendance {
   createdAt: string
@@ -29,7 +29,7 @@ export function ScanQRScreen(props:NativeStackScreenProps<RootStackParamList, 'S
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [scanned, setScanned] = useState(false);
   const [posting, setPosting] = useState(false);
-  const { token } = useGlobalContext(props);
+  const { data } = useAuth(props);
 
   useEffect(() => {
     (async () => {
@@ -47,7 +47,7 @@ export function ScanQRScreen(props:NativeStackScreenProps<RootStackParamList, 'S
         // 1 second debounced
         axios.post<ParseResponse>(API_URI+'/qr/parse', {payload: res.data}, {
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${data?.data.token}`
           }
         }).then((res)=> {
           setPosting(false)

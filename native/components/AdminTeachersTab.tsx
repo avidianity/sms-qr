@@ -1,19 +1,17 @@
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs'
 import React from 'react'
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native'
-import { Text } from 'react-native-elements'
+import { Button, Text } from 'react-native-elements'
 import { Card } from 'react-native-elements/dist/card/Card'
 import { Icon } from 'react-native-elements/dist/icons/Icon'
 import { useQuery } from 'react-query'
 import { getTeachers } from '../queries/teachers'
-import { useGlobalContext } from '../utils/GlobalContext'
+import { useAuth } from '../utils/GlobalContext'
 import { UserCard } from './UserCard'
 
 
 export function AdminTeachersTab(props:MaterialTopTabBarProps) {
-  const { token } = useGlobalContext(props)
-
-  const { data,isLoading,refetch } = useQuery('teachers', async ()=> getTeachers(token), {
+  const { data,isLoading,refetch } = useQuery('teachers', async ()=> getTeachers(), {
     refetchOnWindowFocus: true
   })
 
@@ -28,7 +26,7 @@ export function AdminTeachersTab(props:MaterialTopTabBarProps) {
         }
       >
         {
-          data?.data.map((user, key)=><UserCard refetch={refetch} token={token} user={user} key={key} navigation={props.navigation}/>)
+          data?.data.map((user, key)=><UserCard refetch={refetch} user={user} key={key} navigation={props.navigation}/>)
         }
         <View style={{borderRadius: 8, height: 92}}>
           <Pressable

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import { Avatar, Text } from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useGlobalContext } from '../utils/GlobalContext';
+import { useAuth, useUserQuery } from '../utils/GlobalContext';
 import { AvatarText, CapitalizeFirstLetter } from '../utils/string';
 import WavyHeader1 from '../components/waves/WavyHeader1';
 import { FrontPageContainer } from '../components/FrontPageContainer';
@@ -19,17 +19,15 @@ import { RootStackParamList } from '../App';
 
 //Index2 is for teachers
 export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, 'Teacher'>) {
-  const { user, token } = useGlobalContext(props)
+  
+  const { data, logout } = useAuth(props);
 
-  const { data, isSuccess } = useQuery('teacher_qr', async () => await getQR(user, token), {refetchOnMount: false, refetchOnReconnect: false, refetchOnWindowFocus: false})
+  const { data:qr, isSuccess } = useQuery('teacher_qr', async () => await getQR(data?.data.user), {refetchOnMount: false, refetchOnReconnect: false, refetchOnWindowFocus: false})
   const [isDialOpen, setIsDialOpen] = useState(false)
+  const user = data?.data.user
 
-  if (data === null || data === undefined || !isSuccess) {
+  if (qr === null || qr === undefined || !isSuccess || user === undefined) {
     return <Splash children={<Text>Loading QR..</Text>}/>
-  }
-
-  const handleLogout = async () => {
-    props.navigation.navigate('Welcome', {method: 'logout'})
   }
 
   return (
@@ -76,7 +74,7 @@ export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, '
           elevation: 5,
           // flex: .8
         }}>
-          <QRCode value={data.data}/>
+          <QRCode value={qr.data}/>
         </View>
       </FrontPageContainer>
 
@@ -92,13 +90,13 @@ export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, '
           icon={{ name: 'logout', color: '#fff' }}
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
           title="Logout"
-          onPress={handleLogout}
+          onPress={()=>logout()}
         />
         <SpeedDial.Action
           icon={{ name: 'visibility', color: '#fff' }}
-          title="View Attendance"
+          title="View My Attendance"
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
-          onPress={()=>props.navigation.navigate('Attendance', {user})}
+          onPress={()=>props.navigation.navigate('User', {user})}
         />
       </SpeedDial>
 

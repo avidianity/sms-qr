@@ -3,13 +3,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import axios, { AxiosResponse } from "axios"
 import { User } from "../../types"
 
-export async function getTeachers(token:string) {
-  if (token.length === 0) return null
+export async function getTeachers() {
 
   try {
     const get = await axios.get(API_URI+'/teachers/', {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
       }
     }) as AxiosResponse<User[]>
     return get

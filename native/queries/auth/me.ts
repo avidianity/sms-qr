@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 /* `{{base}}/auth/check` with token authentication */
 export async function getMe() {
   const asToken=await AsyncStorage.getItem('token')
+
   // if (token.length === 0) return null
   if (asToken === null) return null
 
@@ -18,7 +19,7 @@ export async function getMe() {
     return get
   } catch (err) {
     // Clear storage if invalid auth
-    await AsyncStorage.multiRemove(['token, user'])
+    await AsyncStorage.removeItem('token')
   }
 
   return null

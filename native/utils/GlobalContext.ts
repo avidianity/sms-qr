@@ -6,33 +6,40 @@ import { useQuery } from "react-query";
 import { RootStackParamList } from "../App";
 import { getMe } from "../queries/auth/me";
 import { Token, User } from "../types";
+import {Restart} from 'fiction-expo-restart';
 
-export type GlobalContent = {
-  user: Partial<User>
-  setUser: React.Dispatch<React.SetStateAction<Partial<User>>>
-  token: Token
-  setToken: React.Dispatch<React.SetStateAction<string>>
+// export type GlobalContent = {
+//   token: Token | 'none'
+//   setToken: React.Dispatch<React.SetStateAction<string>>
+// }
+
+// export const GlobalContext = createContext<GlobalContent>({
+//   token: 'none',
+//   setToken: () => {}
+// })
+
+export const useAuth = (props?:NativeStackScreenProps<RootStackParamList, any>) => {
+  const query = useQuery('check', async () => await getMe())
+
+  const setToken = async (token:Token) => {
+    await AsyncStorage.setItem('token', token)
+    query.refetch()
+  }
+
+  const logout = async () => {
+    await AsyncStorage.removeItem('token')
+    props?.navigation.reset({index: 0, routes: [{name: 'Welcome', params: {method: 'logout'}}]})
+  }
+
+  return {...query, logout, setToken}
 }
 
-export const GlobalContext = createContext<GlobalContent>({
-  user: {},
-  setUser: () => {},
-  token: '',
-  setToken: () => {}
-})
+export const useUserQuery = (token:Token) => {
+  const query = useQuery('user', async () => await getMe().then(res=>res?.data.user))
 
-export const useGlobalContext = (props:NativeStackScreenProps<RootStackParamList, any> | MaterialTopTabBarProps) => {
-  const context = useContext(GlobalContext);
-
-  useEffect(()=> {
-    if (props.navigation.getState().index === 0) return
-
-    if (context.token === '' || context.user === {}) {
-      console.log(context.token, context.user)
-
-      props.navigation.reset({index: 0, routes: [{ name: 'Welcome'}]})
-    }
-  }, [context])
-
-  return context
-}
+  useEffect(()=>{
+    query.refetch()
+  }, [token])
+  
+  return query
+};

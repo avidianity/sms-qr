@@ -9,7 +9,7 @@ import * as yup from 'yup'
 import { CapitalizeFirstLetter } from '../utils/string';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginResponse, UserResponse } from '../types';
-import { useGlobalContext } from '../utils/GlobalContext';
+import { useAuth } from '../utils/GlobalContext';
 import { StatusBar } from 'expo-status-bar';
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 
@@ -20,7 +20,8 @@ const loginValidationSchema = yup.object().shape({
 
 
 export function Login(props:MaterialTopTabBarProps) {
-  const { setUser, setToken } = useGlobalContext(props)
+  const { setToken } = useAuth()
+
   return (
     <FrontPageContainer bg={0}>
       <StatusBar style='dark' />
@@ -50,11 +51,7 @@ export function Login(props:MaterialTopTabBarProps) {
                     Alert.alert("Login Error", body.message, [{text: 'Ok', style: 'cancel'}], {cancelable:true})
                   } else {
                     //save to context
-                    setUser(body.user)
                     setToken(body.token)
-
-                    await AsyncStorage.setItem('token', body.token)
-                    await AsyncStorage.setItem('user', JSON.stringify(body.user))
                   }
 
                   setSubmitting(false)

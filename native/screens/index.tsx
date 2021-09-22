@@ -2,11 +2,11 @@ import React, { ReactChildren, ReactElement, useEffect, useState } from 'react';
 import { Login } from '../components/Login';
 import { Register } from '../components/Register';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useGlobalContext } from '../utils/GlobalContext';
+import { useAuth } from '../utils/GlobalContext';
 import { useQuery } from 'react-query';
 import { getMe } from '../queries/auth/me';
 import { Icon, Text } from 'react-native-elements';
-import { View } from "react-native"
+import { ToastAndroid, View } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AxiosResponse } from 'axios';
 import { User, UserResponse } from '../types';
@@ -16,53 +16,25 @@ import { RootStackParamList } from '../App';
 const Tab = createMaterialTopTabNavigator();
 
 export function IndexScreen(props:NativeStackScreenProps<RootStackParamList, 'Welcome'>) {
+  const { data, isSuccess } = useAuth(props)
 
-  const method = props?.route?.params?.method
-  const { token, setToken, setUser, user } = useGlobalContext(props)
+  useEffect(()=> {
+    async function asyncLogout() {
+      ToastAndroid.show('Logged out successfully.', ToastAndroid.LONG)
+      await AsyncStorage.removeItem('token')
+    }  
 
-  const [data, setData] = useState<AxiosResponse<UserResponse> | null>()
+    if (props?.route?.params?.method === 'logout') asyncLogout()
+  }, [props.route.params])
 
   useEffect(()=>{
-    if (method === 'logout') {
+    if (!isSuccess || !data) return
 
-      (async ()=> {
-        await AsyncStorage.removeItem('token');
-        await AsyncStorage.removeItem('user');
-      })()
+    if (data.data.user.role === 'TEACHER') props.navigation.reset({index: 1, routes: [{ name: 'Teacher'}]})
+    else if (data.data.user.role === 'ADMIN') props.navigation.reset({index: 1, routes: [{ name: 'Admin'}]})
+  }, [data, isSuccess])
 
-      setToken('');
-      setUser({});
-
-      props.navigation.reset({
-        index: 0,
-        routes: [{ name: 'Welcome' }],
-      })
-    }
-  }, [method])
-
-  useEffect(() =>{
-    if (data?.data.token) setToken(data?.data.token)
-    if (data?.data.user) setUser(data?.data.user)
-    
-    async function reroute() {
-      const res = await getMe()
-        if (res !== null && res !== undefined)
-          setData(res);
-      
-      const asUser = await AsyncStorage.getItem('user')
-
-      if (typeof asUser === null || asUser === null) return
-
-      const parsedUser:User = JSON.parse(asUser)
-
-      if (parsedUser.role === 'TEACHER') props.navigation.reset({index: 0, routes: [{ name: 'Teacher'}]})
-      else if (parsedUser.role === 'ADMIN') props.navigation.reset({index: 0, routes: [{ name: 'Admin'}]})
-    }
-
-    reroute()
-  }, [data, token, user])
-
-  if (token.length === 0 || data === null) {
+  if (!data && isSuccess) {
     return (
       <Tab.Navigator screenOptions={{tabBarStyle:{display:'none'}}}>
         <Tab.Screen name='Login' component={Login}/>
@@ -70,8 +42,8 @@ export function IndexScreen(props:NativeStackScreenProps<RootStackParamList, 'We
       </Tab.Navigator>
     )
   }
-
-  return <Splash children={<Text>Please wait...</Text>} />
+  
+  return <Splash children={<Text>SMS-QR</Text>} />
 }
 
 interface ISplash {
@@ -79,6 +51,7 @@ interface ISplash {
 }
 
 export function Splash({children}:ISplash) {
+
   return (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
       <Icon name='people' size={64}/>

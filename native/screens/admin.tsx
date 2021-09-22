@@ -6,7 +6,9 @@ import { AdminAdminsTab } from '../components/AdminAdminsTab';
 import { AdminTeachersTab } from '../components/AdminTeachersTab';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../App';
-import { useDownloadAttendance } from '../components/UseDownloadAttendance';
+import { useAuth } from '../utils/GlobalContext';
+import { Linking, ToastAndroid } from 'react-native';
+import { API_URI } from '@env';
 
 interface IProps {
   onLogout(): {}
@@ -17,13 +19,19 @@ const Tab = createMaterialTopTabNavigator();
 
 // Index3 is for admin
 export function AdminScreen (props:NativeStackScreenProps<RootStackParamList, 'Admin'>) {
-  const {DownloadAttendance} = useDownloadAttendance(props)
+  const {data, logout} = useAuth(props)
+  const user = data?.data.user
   const [isDialOpen, setIsDialOpen] = useState(false);
+
+  const DownloadAttendance = async () => {
+    if (user) Linking.openURL(API_URI+'/attendances/'+user.uuid+'/attendance.xlsx')
+    else ToastAndroid.show('User not found!', ToastAndroid.SHORT)
+  }
 
   return (
     <Fragment>
       <StatusBar backgroundColor='orange' style='dark' />
-
+      
       <Tab.Navigator>
         <Tab.Screen name='Teachers' component={AdminTeachersTab}/>
         <Tab.Screen name='Admins' component={AdminAdminsTab}/>
@@ -41,9 +49,7 @@ export function AdminScreen (props:NativeStackScreenProps<RootStackParamList, 'A
           icon={{ name: 'logout', color: '#fff' }}
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
           title="Logout"
-          onPress={()=>{
-            props.navigation.navigate('Welcome', {method: 'logout'})
-          }}
+          onPress={async ()=> await logout()}
           
         />
         <SpeedDial.Action

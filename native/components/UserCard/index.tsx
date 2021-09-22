@@ -1,22 +1,22 @@
 import React, { Fragment, useState } from 'react';
 import { User } from '../../types';
 import { Avatar, Icon, Overlay, Text, Button } from 'react-native-elements'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { Card } from 'react-native-elements/dist/card/Card'
 import { AvatarText, CapitalizeFirstLetter } from '../../utils/string';
-import { View, SectionList, ToastAndroid } from 'react-native';
+import { View, ToastAndroid } from 'react-native';
 import randomColor from 'randomcolor';
 import axios from 'axios';
 import { API_URI } from '@env';
+import { NavigationHelpers } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface IProps {
   user: User
-  navigation: any
-  token: string
+  navigation: NavigationHelpers<any, any>
   refetch():void
 }
 
-export function UserCard({user, token, navigation,refetch}:IProps) {
+export function UserCard({user, navigation,refetch}:IProps) {
   const [visible, setVisible] = useState(false);
   const roleString = CapitalizeFirstLetter(user.role.toLowerCase())
   const [avatarColor] = useState(randomColor({luminosity: 'dark'}))
@@ -35,7 +35,7 @@ export function UserCard({user, token, navigation,refetch}:IProps) {
               <Button
                 title={`View Attendance`}
                 containerStyle={{marginBottom: 8}}
-                onPress={()=>navigation.navigate('Attendance', {user})}
+                onPress={()=>navigation.navigate('User', {user})}
                 icon={<Icon name="settings" size={24} color="white"/>}
                 buttonStyle={{paddingVertical: 16}}
               />
@@ -51,10 +51,10 @@ export function UserCard({user, token, navigation,refetch}:IProps) {
           />
           <Button
             title={`Delete ${roleString}`}
-            onPress={()=>{
+            onPress={async ()=>{
               axios.delete(`${API_URI}/${user.role}s/${user.id}`, {
                 headers: {
-                  'Authorization': `Bearer ${token}`
+                  'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
                 }
               }).then((res)=>{
                 ToastAndroid.show(`Succcessfully deleted ${user.role.toLowerCase()} ${user.name}.`, ToastAndroid.LONG);

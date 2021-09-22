@@ -6,7 +6,6 @@ import { User } from '../types';
 import { Splash } from '.';
 import { useQuery } from 'react-query';
 import { getAttendance } from '../queries/teachers/attendances';
-import { useGlobalContext } from '../utils/GlobalContext';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../App';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -23,7 +22,7 @@ type tmp = {
   [date: string]: CustomMarking;
 }
 
-export function AttendanceScreen(props:NativeStackScreenProps<RootStackParamList, 'Attendance'>) {
+export function UserScreen(props:NativeStackScreenProps<RootStackParamList, 'User'>) {
   const user = props.route?.params?.user
 
   const {data, isLoading, refetch} = useQuery(['attendance', user?.id], async () => await getAttendance(user))

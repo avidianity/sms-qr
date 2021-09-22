@@ -9,7 +9,6 @@ import * as yup from 'yup'
 import { CapitalizeFirstLetter } from '../utils/string';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LoginResponse, User, UserResponse } from '../types';
-import { useGlobalContext } from '../utils/GlobalContext';
 import { phoneRegExp, strongPasswordExp } from '../utils/regex';
 import axios, { AxiosResponse } from 'axios';
 import { StatusBar } from 'expo-status-bar';
@@ -17,6 +16,7 @@ import PhoneInput from 'react-native-phone-number-input';
 import {CountryCode} from 'react-native-phone-number-input/node_modules/react-native-country-picker-modal'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../App';
+import { useAuth } from '../utils/GlobalContext';
 
 const passwordShape = yup
 .string()
@@ -54,15 +54,12 @@ const updateValidationSchema = yup.object().shape({
 type Methods = 'add_teacher' | 'add_admin'
 
 export function Register(props:NativeStackScreenProps<RootStackParamList, 'Update'>) {
-  const [countryCode, setCountryCode] = useState<CountryCode>('PH')
+  const [countryCode] = useState<CountryCode>('PH')
 
-  let user:User= props?.route?.params?.user || {}
-  let method:Methods = props?.route?.params?.method
+  const hasUser = props?.route?.params?.user && Object.keys(props?.route?.params?.user).length > 0
+  const hasMethod = props?.route?.params?.method && props?.route?.params?.method.length > 0
 
-  const hasUser = Object.keys(user).length > 0
-  const hasMethod = method?.length > 0
-
-  const { token, setUser, setToken } = useGlobalContext(props)
+  const { data, setToken } = useAuth(props)
 
   return (
     <FrontPageContainer bg={1}>
@@ -71,18 +68,18 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
         <View style={formStyles.container}>
           <Text style={formStyles.header}>{
            hasUser ? 'Update Account' :
-           method === 'add_teacher' ? 'Add Teacher' :
-           method === 'add_admin' ? 'Add Admin' :
+           props?.route?.params?.method === 'add_teacher' ? 'Add Teacher' :
+           props?.route?.params?.method === 'add_admin' ? 'Add Admin' :
            'Create Account'
           }</Text>
           <View style={formStyles.form}>
             <Formik
               initialValues={{
-                name: user.name || '',
-                email: user.email || '',
+                name:  props?.route?.params?.user &&  props?.route?.params?.user.name || '',
+                email: props?.route?.params?.user &&  props?.route?.params?.user.email || '',
                 password: '',
                 confirmpassword: '',
-                number: user.number || ''
+                number: props?.route?.params?.user &&  props?.route?.params?.user.number.substring(1) || ''
               }}
               validationSchema={hasUser ? updateValidationSchema : registerValidationSchema}
               onSubmit={(values, {setSubmitting})=> {
@@ -102,19 +99,19 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
                 //transform number into 11 digit
                 if (tmpValues.number) tmpValues.number = '0' + tmpValues['number']
                 console.log(tmpValues.number)
-                if (hasUser) {
-                  request = axios.put(API_URI+'/teachers/'+user.id, tmpValues, {
-                    headers: {'Authorization': `Bearer ${token}`}
+                if (props?.route?.params?.user && Object.keys(props?.route?.params?.user).length > 0) {
+                  request = axios.put(API_URI+'/teachers/'+ props?.route?.params?.user.id, tmpValues, {
+                    headers: {'Authorization': `Bearer ${data?.data.token}`}
                   })
                 }
-                else if (hasMethod && method === 'add_teacher') {
+                else if (props?.route?.params?.method && props?.route?.params?.method === 'add_teacher') {
                   request = axios.post(API_URI+'/teachers', tmpValues, {
-                    headers: {'Authorization': `Bearer ${token}`}
+                    headers: {'Authorization': `Bearer ${data?.data.token}`}
                   })
                 }
-                else if (hasMethod && method === 'add_admin') {
+                else if (props?.route?.params?.method && props?.route?.params?.method === 'add_admin') {
                   request = axios.post(API_URI+'/admins', tmpValues, {
-                    headers: {'Authorization': `Bearer ${token}`}
+                    headers: {'Authorization': `Bearer ${data?.data.token}`}
                   })
                 }
                 else request = axios.post(API_URI+'/auth/register', tmpValues)
@@ -129,7 +126,6 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
                       await AsyncStorage.setItem('token', res.data.token)
 
                       //save to context
-                      setUser(res.data.user)
                       setToken(res.data.token)
                     } else  {
                       props.navigation.goBack()
@@ -210,7 +206,7 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
                   <Button
                     title={
                       hasUser ? "Update" :
-                      (hasMethod && method === 'add_teacher') ? "Submit" :
+                      (props?.route?.params?.method && props?.route?.params?.method === 'add_teacher') ? "Submit" :
                       "Register"
                   }
                     onPress={()=>handleSubmit()}
@@ -218,7 +214,7 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
                     loading={isSubmitting}
                   />
                   {
-                    !user && (
+                    !(props?.route?.params && Object.keys(props?.route?.params).length > 0) && (
                       <View style={formStyles.footerView}>
                         <Text style={formStyles.text1}>Already have an account?</Text>
                         <Button 

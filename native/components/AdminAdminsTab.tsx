@@ -5,14 +5,12 @@ import { Text } from 'react-native-elements'
 import { Icon } from 'react-native-elements/dist/icons/Icon'
 import { useQuery } from 'react-query'
 import { getAdmins } from '../queries/admins'
-import { useGlobalContext } from '../utils/GlobalContext'
+import { useAuth } from '../utils/GlobalContext'
 import { UserCard } from './UserCard'
 
 
 export function AdminAdminsTab(props:MaterialTopTabBarProps) {
-  const { token } = useGlobalContext(props)
-
-  const { data,isLoading,refetch } = useQuery('admins', async ()=> getAdmins(token), {
+  const { data,isLoading,refetch } = useQuery('admins', async ()=> getAdmins(), {
     refetchOnWindowFocus: true
   })
 
@@ -27,7 +25,7 @@ export function AdminAdminsTab(props:MaterialTopTabBarProps) {
         }
       >
         {
-          data?.data.map((user, key)=><UserCard refetch={refetch} token={token} user={user} key={key} navigation={props.navigation}/>)
+          data?.data.map((user, key)=><UserCard refetch={refetch} user={user} key={key} navigation={props.navigation}/>)
         }
         <View style={{borderRadius: 8, height: 92}}>
           <Pressable

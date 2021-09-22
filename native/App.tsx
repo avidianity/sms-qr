@@ -5,7 +5,7 @@ import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 import { IndexScreen } from './screens';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { GlobalContext } from './utils/GlobalContext';
+// import { GlobalContext } from './utils/GlobalContext';
 import { Token, User } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -15,7 +15,7 @@ import { Register } from './components/Register';
 import { TeacherScreen } from './screens/teacher';
 import { getMe } from './queries/auth/me';
 import { AdminScreen } from './screens/admin';
-import { AttendanceScreen } from './screens/attendances';
+import { UserScreen } from './screens/user';
 
 LogBox.ignoreLogs(['Setting a timer', 'React state update']);
 
@@ -31,50 +31,7 @@ const queryClient = new QueryClient()
 
 export default function App(props:any) {
   let colorScheme = useColorScheme()
-  const [token, setToken] = useState<Token>('')
-  const [user, setUser] = useState<Partial<User>>({})
-
-  useEffect(()=> {
-    (async ()=>{
-      let data = await getMe()
-      
-      if (data) {
-        setUser(data.data.user)
-        if (typeof data.data.token === 'string') {
-          setToken(data.data.token)
-        }
-      }
-    })()
-  }, [])
-
-  useEffect(()=>{
-    //Initialize global at start
-    async function SetGlobal() {
-      const tmpToken = await AsyncStorage.getItem('token')
-      const tmpUser = await AsyncStorage.getItem('user')
-
-      if (tmpToken && tmpToken.length > 0) setToken(tmpToken)
-      if (tmpUser) setUser(JSON.parse(tmpUser))
-    }
-
-    SetGlobal()
-  }, [])
-
-  useEffect(()=>{
-    (async ()=>{
-      if ( user && Object.keys(user)?.length > 0) {
-        await AsyncStorage.setItem('user', JSON.stringify(user))
-      }
-    })()
-  }, [user])
-
-  useEffect(()=> {
-    (async ()=> {
-      if (token?.length > 0) {
-        await AsyncStorage.setItem('token', token)
-      }
-    })()
-  }, [token])
+  // const [token, setToken] = useState<Token>('none')
 
   return (
     <SafeAreaProvider>
@@ -82,7 +39,7 @@ export default function App(props:any) {
         <ThemeProvider theme={theme} useDark={colorScheme === 'dark'}>
           <NavigationContainer>
             <QueryClientProvider client={queryClient}>
-              <GlobalContext.Provider value={{token, setToken, user, setUser}}>
+              {/* <GlobalContext.Provider value={{token, setToken}}> */}
                 <Stack.Navigator initialRouteName='Welcome'>
                   <Stack.Screen 
                     name="Welcome"
@@ -117,11 +74,14 @@ export default function App(props:any) {
                     }}
                   />
                   <Stack.Screen
-                    name="Attendance"
-                    component={AttendanceScreen}
+                    name="User"
+                    component={UserScreen}
+                    options={{
+                      title: 'User Screen'
+                    }}
                   />
                 </Stack.Navigator>
-              </GlobalContext.Provider>
+              {/* </GlobalContext.Provider> */}
             </QueryClientProvider>
           </NavigationContainer>
         </ThemeProvider>
@@ -133,12 +93,12 @@ export default function App(props:any) {
 
 export type RootStackParamList = {
   Welcome: {method: 'logout'}
-  Attendance: {user: Partial<User>}
+  User: {user: Partial<User>}
   Teacher: undefined
   Admin: undefined
   'Scan QR Code': undefined
   Update: {
-    method: 'add_teacher' | 'add_admin'
-    user: User
+    method?: 'add_teacher' | 'add_admin'
+    user?: User
   }
 }
