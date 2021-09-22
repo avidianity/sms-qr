@@ -69,7 +69,7 @@ export function ScanQRScreen(props:NativeStackScreenProps<RootStackParamList, 'S
     </BarCodeScanner>
     )
   } else {
-    return <Splash children={<Text style={{color: 'red'}}>Can't access camera!</Text>}/>
+    return <Splash text='Unable to access camera!'/>
   }
 }
 

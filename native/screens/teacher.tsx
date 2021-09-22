@@ -1,48 +1,48 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useEffect, useState } from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import React, { useState } from 'react';
+import { View, StatusBar} from 'react-native';
 import { Avatar, Text } from 'react-native-elements';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth, useUserQuery } from '../utils/GlobalContext';
+import { useAuth } from '../utils/GlobalContext';
 import { AvatarText, CapitalizeFirstLetter } from '../utils/string';
 import WavyHeader1 from '../components/waves/WavyHeader1';
 import { FrontPageContainer } from '../components/FrontPageContainer';
-import { StatusBar } from 'expo-status-bar';
 import { SpeedDial } from 'react-native-elements';
 import QRCode from 'react-qr-code';
 import { useQuery } from 'react-query';
-import { getMe } from '../queries/auth/me';
 import { getQR } from '../queries/qr';
 import { Splash } from '.';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../App';
+import { LinearGradient } from 'expo-linear-gradient';
+import randomColor from 'randomcolor';
 
 //Index2 is for teachers
 export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, 'Teacher'>) {
   
   const { data, logout } = useAuth(props);
+  const [avatarColor] = useState(randomColor({luminosity: 'dark'}));
 
   const { data:qr, isSuccess } = useQuery('teacher_qr', async () => await getQR(data?.data.user), {refetchOnMount: false, refetchOnReconnect: false, refetchOnWindowFocus: false})
+  
   const [isDialOpen, setIsDialOpen] = useState(false)
   const user = data?.data.user
 
   if (qr === null || qr === undefined || !isSuccess || user === undefined) {
-    return <Splash children={<Text>Loading QR..</Text>}/>
+    return <Splash text='Loading QR..'/>
   }
 
   return (
     <View style={{flex:1}}>
-      <StatusBar backgroundColor='#f37335' style='light' />
-      <FrontPageContainer bg={0} onSafeArea>
+      {/* <StatusBar backgroundColor={!isDialOpen ? '#f37335':'#4c2c1c'} style='light' /> */}
+      <FrontPageContainer bg={0}>
         {/* Header */}
-        <View style={{backgroundColor: '#f37335', padding: 24}}>
-          <View style={{flexDirection: 'row', marginBottom:24}}>
+        <LinearGradient colors={['#f37335', '#c25c2a']} style={{padding: 24}}>
+          <View style={{flexDirection: 'row', marginBottom:24, marginTop: StatusBar.currentHeight || 24}}>
             <View style={{marginRight: 12}}>
               <Avatar 
                 rounded
                 title={AvatarText(user.name)}
                 size='medium'
-                overlayContainerStyle={{backgroundColor: 'green'}}
+                overlayContainerStyle={{backgroundColor: avatarColor}}
               />
             </View>
             <View style={{flexDirection: 'column', justifyContent: 'center'}}>
@@ -53,7 +53,7 @@ export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, '
           <View>
             <Text style={{marginBottom: 8, color: 'white'}}>Present your QR code to authorized personnels to have your attendance.</Text>
           </View>
-        </View>
+        </LinearGradient>
         <WavyHeader1/>
       
         {/* Body */}
@@ -88,13 +88,13 @@ export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, '
       >
         <SpeedDial.Action
           icon={{ name: 'logout', color: '#fff' }}
-          buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
+          buttonStyle={{borderRadius: 32, backgroundColor: '#DC143C'}}
           title="Logout"
           onPress={()=>logout()}
         />
         <SpeedDial.Action
           icon={{ name: 'visibility', color: '#fff' }}
-          title="View My Attendance"
+          title="View Attendance"
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
           onPress={()=>props.navigation.navigate('User', {user})}
         />

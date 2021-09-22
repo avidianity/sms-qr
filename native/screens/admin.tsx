@@ -47,22 +47,24 @@ export function AdminScreen (props:NativeStackScreenProps<RootStackParamList, 'A
       >
         <SpeedDial.Action
           icon={{ name: 'logout', color: '#fff' }}
-          buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
+          buttonStyle={{borderRadius: 32, backgroundColor: '#DC143C'}}
           title="Logout"
           onPress={async ()=> await logout()}
-          
+          titleStyle={{paddingHorizontal: 6}}
         />
         <SpeedDial.Action
           icon={{ name: 'camera', color: '#fff' }}
           title="Scan QR Code"
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
           onPress={()=>props.navigation.navigate('Scan QR Code')}
+          titleStyle={{paddingHorizontal: 6}}
         />
         <SpeedDial.Action
           icon={{ name: 'description', color: '#fff' }}
           title="Download Monthly Attendance Sheet"
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
           onPress={DownloadAttendance}
+          titleStyle={{paddingHorizontal: 6}}
         />
       </SpeedDial>
     </Fragment>

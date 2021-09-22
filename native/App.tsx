@@ -77,7 +77,7 @@ export default function App(props:any) {
                     name="User"
                     component={UserScreen}
                     options={{
-                      title: 'User Screen'
+                      title: 'User'
                     }}
                   />
                 </Stack.Navigator>

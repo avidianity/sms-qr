@@ -1,17 +1,15 @@
-import React, { ReactChildren, ReactElement, useEffect, useState } from 'react';
-import { Login } from '../components/Login';
-import { Register } from '../components/Register';
+import React, { useEffect, useRef, useState } from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useAuth } from '../utils/GlobalContext';
-import { useQuery } from 'react-query';
-import { getMe } from '../queries/auth/me';
-import { Icon, Text } from 'react-native-elements';
-import { ToastAndroid, View } from "react-native"
+import { Icon,  Text } from 'react-native-elements';
+import { Easing, StyleProp, StyleSheet, TextStyle, ToastAndroid, View } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AxiosResponse } from 'axios';
-import { User, UserResponse } from '../types';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../App';
+import { LinearGradient } from 'expo-linear-gradient';
+import {Animated} from 'react-native';
+import { Login } from '../components/Login';
+import { Register } from '../components/Register';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -43,19 +41,81 @@ export function IndexScreen(props:NativeStackScreenProps<RootStackParamList, 'We
     )
   }
   
-  return <Splash children={<Text>SMS-QR</Text>} />
+  return <Splash text='SMS-QR' />
 }
 
 interface ISplash {
-  children?: ReactElement
+  text: string
+  textStyle?: StyleProp<TextStyle>
 }
 
-export function Splash({children}:ISplash) {
+
+
+export function Splash(
+  {
+    text, 
+    textStyle
+  }:ISplash) 
+{
+  const animation = useRef(new Animated.Value(0)).current
+
+  useEffect(()=> {
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(animation, {
+          toValue: -15,
+          duration: 1000,
+          easing: Easing.sin,
+          useNativeDriver: true
+        }),
+        Animated.timing(animation, {
+          toValue: 0,
+          duration: 500,
+          easing: Easing.bounce,
+          useNativeDriver: true
+        }),
+      ])
+    )
+
+    
+    anim.start()
+
+  }, []);
+
+  const trans={
+    transform: [
+      {
+        translateY: animation
+      }
+    ]
+  }
 
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
-      <Icon name='people' size={64}/>
-      {children}
-    </View>
+    <LinearGradient colors={['#f37335', '#18a86b']} style={{flex:1}}>
+      <View style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+      }}>
+        <Animated.View style={[SplashStyle.iconView, trans]} >
+          <Icon name='qrcode' type='fontisto' size={64} color='white'/>
+        </Animated.View>
+        <Text style={[textStyle, SplashStyle.textStyleDefault]}>{text}</Text>
+      </View>
+    </LinearGradient>
   )
 }
+
+const SplashStyle = StyleSheet.create({
+  iconView: {
+    marginBottom: 12
+  },
+
+  textStyleDefault: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 21,
+    fontFamily: ''
+  }
+})
