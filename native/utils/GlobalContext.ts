@@ -28,7 +28,9 @@ export const useAuth = (props?:NativeStackScreenProps<RootStackParamList, any>) 
 
   const logout = async () => {
     await AsyncStorage.removeItem('token')
-    props?.navigation.reset({index: 0, routes: [{name: 'Welcome', params: {method: 'logout'}}]})
+    query.refetch().then(()=>{
+      props?.navigation.reset({index: 0, routes: [{name: 'Welcome', params: {method: 'logout'}}]})
+    })
   }
 
   return {...query, logout, setToken}
