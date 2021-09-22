@@ -73,6 +73,12 @@ router.post(
                         .set('minutes', 0)
                         .set('milliseconds', 0)
                         .toDate(),
+                    gte: now
+                        .set('hours', 8)
+                        .set('seconds', 0)
+                        .set('minutes', 0)
+                        .set('milliseconds', 0)
+                        .toDate(),
                 },
             },
         });
