@@ -6,7 +6,7 @@ import { IndexScreen } from './screens';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // import { GlobalContext } from './utils/GlobalContext';
-import { Token, User } from './types';
+import { Roles, Token, User } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { LogBox } from 'react-native';
@@ -98,7 +98,7 @@ export type RootStackParamList = {
   Admin: undefined
   'Scan QR Code': undefined
   Update: {
-    method?: 'add_teacher' | 'add_admin'
+    method?: `add_${Lowercase<Roles>}` |  `update_${Lowercase<Roles>}`
     user?: User
   }
 }

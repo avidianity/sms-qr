@@ -1,5 +1,5 @@
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native'
 import { Button, Text } from 'react-native-elements'
 import { Card } from 'react-native-elements/dist/card/Card'
@@ -11,9 +11,7 @@ import { UserCard } from './UserCard'
 
 
 export function AdminTeachersTab(props:MaterialTopTabBarProps) {
-  const { data,isLoading,refetch } = useQuery('teachers', async ()=> getTeachers(), {
-    refetchOnWindowFocus: true
-  })
+  const { data,isLoading,refetch } = useQuery('teachers', async ()=> getTeachers())
 
   return (
     <View style={{flex: 1}}>

@@ -77,7 +77,7 @@ export function UserCard({user, navigation,refetch}:IProps) {
           <Button
             title={`Update ${roleString}`}
             containerStyle={{marginBottom: 8}}
-            onPress={()=>navigation.navigate('Update', {user})}
+            onPress={()=>navigation.navigate('Update', {user, method: `update_${roleString.toLowerCase()}`})}
             icon={<Icon name="settings" size={24} color='white'/>}
             buttonStyle={{paddingVertical: 8}}
             titleStyle={{paddingHorizontal: 6}}

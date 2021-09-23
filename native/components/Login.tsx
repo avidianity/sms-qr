@@ -15,7 +15,7 @@ import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 
 const loginValidationSchema = yup.object().shape({
   email: yup.string().email().required('Email is required.'),
-  password: yup.string().min(6, ({ min }) => `Password must be at least ${min} characters`).required('Password is required.')
+  password: yup.string().required('Password is required.')
 })
 
 

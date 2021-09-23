@@ -1,5 +1,5 @@
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Pressable, RefreshControl, ScrollView, View } from 'react-native'
 import { Text } from 'react-native-elements'
 import { Icon } from 'react-native-elements/dist/icons/Icon'
@@ -10,9 +10,7 @@ import { UserCard } from './UserCard'
 
 
 export function AdminAdminsTab(props:MaterialTopTabBarProps) {
-  const { data,isLoading,refetch } = useQuery('admins', async ()=> getAdmins(), {
-    refetchOnWindowFocus: true
-  })
+  const { data,isLoading,refetch } = useQuery('admins', async ()=> getAdmins())
 
   return (
     <View style={{flex: 1}}>

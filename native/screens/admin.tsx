@@ -28,6 +28,8 @@ export function AdminScreen (props:NativeStackScreenProps<RootStackParamList, 'A
     else ToastAndroid.show('User not found!', ToastAndroid.SHORT)
   }
 
+  console.log(data?.data.token)
+  
   return (
     <Fragment>
       <StatusBar backgroundColor='orange' style='dark' />

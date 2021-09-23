@@ -10,13 +10,15 @@ export interface ErrorResponse {
   message: string
 }
 
+export type Roles = "ADMIN" | "TEACHER"
+
 export interface User {
   id: number
   uuid: string
   name: string
   email: string
   password: string
-  role: "ADMIN" | "TEACHER"
+  role: Roles
   number: string
   createdAt: String 
   updatedAt: String

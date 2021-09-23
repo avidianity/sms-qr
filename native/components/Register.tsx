@@ -51,8 +51,6 @@ const updateValidationSchema = yup.object().shape({
   number: yup.string().length(10)
 })
 
-type Methods = 'add_teacher' | 'add_admin'
-
 export function Register(props:NativeStackScreenProps<RootStackParamList, 'Update'>) {
   const [countryCode] = useState<CountryCode>('PH')
 
@@ -60,7 +58,18 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
   const hasMethod = props?.route?.params?.method && props?.route?.params?.method.length > 0
 
   const { data, setToken } = useAuth(props)
+  
+  const user = props?.route?.params?.user
+  const method = props?.route?.params?.method
 
+  const [initialValues] = useState({
+    name:  user?.name || '',
+    email: user?.email || '',
+    password: '',
+    confirmpassword: '',
+    number: user?.number.substring(1) || ''
+  })
+  
   return (
     <FrontPageContainer bg={1}>
       <StatusBar style='dark' />
@@ -74,13 +83,7 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
           }</Text>
           <View style={formStyles.form}>
             <Formik
-              initialValues={{
-                name:  props?.route?.params?.user &&  props?.route?.params?.user.name || '',
-                email: props?.route?.params?.user &&  props?.route?.params?.user.email || '',
-                password: '',
-                confirmpassword: '',
-                number: props?.route?.params?.user &&  props?.route?.params?.user.number.substring(1) || ''
-              }}
+              initialValues={initialValues}
               validationSchema={hasUser ? updateValidationSchema : registerValidationSchema}
               onSubmit={(values, {setSubmitting})=> {
                 let request:Promise<AxiosResponse<any>>
@@ -88,35 +91,46 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
                 //Remove unchanged to values
                 let {confirmpassword ,...tmpValues} = {...values}
 
-                Object.keys(values).forEach((key) => {
+                tmpValues && Object.keys(tmpValues).forEach((key) => {
+
                   //@ts-ignore
-                  if (values[key] === user[key] || values[key].length === 0) {
+                  let tmpVal:string = tmpValues[key]
+
+                  //@ts-ignore
+                  let userVal:string = initialValues[key]
+
+                  if (tmpVal===userVal || tmpVal.length === 0) {
                     //@ts-ignore
                     delete tmpValues[key]
                   }
                 })
 
-                //transform number into 11 digit
+                //transform tmpValues number into 11 digit
                 if (tmpValues.number) tmpValues.number = '0' + tmpValues['number']
-                console.log(tmpValues.number)
-                if (props?.route?.params?.user && Object.keys(props?.route?.params?.user).length > 0) {
-                  request = axios.put(API_URI+'/teachers/'+ props?.route?.params?.user.id, tmpValues, {
-                    headers: {'Authorization': `Bearer ${data?.data.token}`}
-                  })
+
+                const options = {headers: {'Authorization': `Bearer ${data?.data.token}`}}
+                console.log(method)
+                if ((method === 'update_admin') && user && Object.keys(user).length > 0) {
+                  console.log('editing admin')
+                  request = axios.put(API_URI+'/admins/'+ user.id, tmpValues, options)
                 }
-                else if (props?.route?.params?.method && props?.route?.params?.method === 'add_teacher') {
-                  request = axios.post(API_URI+'/teachers', tmpValues, {
-                    headers: {'Authorization': `Bearer ${data?.data.token}`}
-                  })
+                else if (method === 'update_teacher' && user && Object.keys(user).length > 0) {
+                  console.log('editing teacher')
+                  request = axios.put(API_URI+'/teachers/'+ user.id, tmpValues, options)
                 }
-                else if (props?.route?.params?.method && props?.route?.params?.method === 'add_admin') {
-                  request = axios.post(API_URI+'/admins', tmpValues, {
-                    headers: {'Authorization': `Bearer ${data?.data.token}`}
-                  })
+                else if (method === 'add_teacher') {
+                  console.log('adding teacher')
+                  request = axios.post(API_URI+'/teachers', tmpValues, options)
+                }
+                else if (method === 'add_admin') {
+                  console.log('adding admin')
+                  request = axios.post(API_URI+'/admins', tmpValues, options)
                 }
                 else request = axios.post(API_URI+'/auth/register', tmpValues)
-
+                console.log('preposting ', tmpValues, 'with token', data?.data.token)
+                
                 request.then(async (res:AxiosResponse<UserResponse>)=> {
+                  console.log(res.data)
                   if (res.data?.message) {
                     Alert.alert("Form Error", res.data.message, [{text: 'Ok', style: 'cancel'}], {cancelable:true})
                   } else {
@@ -133,9 +147,10 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
                   }
                   setSubmitting(false)
                 }).catch((err:Error)=> {
+                  
                   Alert.alert(
                     "DEV | " + err.name,
-                    err.stack, [{
+                    err.message, [{
                       text: 'Cancel',
                       style: 'cancel'
                     }], {
@@ -147,7 +162,8 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
               }}
             >
               {
-                ({handleChange, handleBlur, handleSubmit, isSubmitting, values, errors, isValid}) => (
+                ({handleChange, handleBlur, handleSubmit, isSubmitting, values, errors, isValid}) => {
+                  return (
                   <View>
                     {
                       errors.name && <Text style={formStyles.errorText}>{CapitalizeFirstLetter(errors.name)}</Text>
@@ -210,7 +226,7 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
                       "Register"
                   }
                     onPress={()=>handleSubmit()}
-                    disabled={isSubmitting || !isValid}
+                    disabled={isSubmitting || !isValid || (values === initialValues)}
                     loading={isSubmitting}
                   />
                   {
@@ -228,7 +244,7 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
                     )
                   }
                 </View>
-              )
+              )}
             }
           </Formik>
         </View>
