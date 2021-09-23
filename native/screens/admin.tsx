@@ -9,6 +9,8 @@ import { RootStackParamList } from '../App';
 import { useAuth } from '../utils/GlobalContext';
 import { Linking, ToastAndroid } from 'react-native';
 import { API_URI } from '@env';
+import * as FileSystem from 'expo-file-system';
+import * as IntentLauncher from 'expo-intent-launcher';
 
 interface IProps {
   onLogout(): {}
@@ -24,11 +26,26 @@ export function AdminScreen (props:NativeStackScreenProps<RootStackParamList, 'A
   const [isDialOpen, setIsDialOpen] = useState(false);
 
   const DownloadAttendance = async () => {
-    if (user) Linking.openURL(API_URI+'/attendances/'+user.uuid+'/attendance.xlsx')
+    if (user) {
+      FileSystem.downloadAsync(
+        API_URI+'/attendances/attendances',
+        FileSystem.documentDirectory+'attendance.xlsx',
+        {
+          headers: {
+            'Authorization': `Bearer ${data.data.token}`
+          }
+        }
+      ).then((res)=>{
+        FileSystem.getContentUriAsync(res.uri).then(cUri => {
+          IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+            data: cUri,
+            flags: 1,
+          });
+        });
+      })
+    }
     else ToastAndroid.show('User not found!', ToastAndroid.SHORT)
   }
-
-  console.log(data?.data.token)
   
   return (
     <Fragment>
@@ -63,7 +80,7 @@ export function AdminScreen (props:NativeStackScreenProps<RootStackParamList, 'A
         />
         <SpeedDial.Action
           icon={{ name: 'description', color: '#fff' }}
-          title="Download Monthly Attendance Sheet"
+          title="Monthly Attendance Sheet"
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
           onPress={DownloadAttendance}
           titleStyle={{paddingHorizontal: 6}}

@@ -109,28 +109,22 @@ export function Register(props:NativeStackScreenProps<RootStackParamList, 'Updat
                 if (tmpValues.number) tmpValues.number = '0' + tmpValues['number']
 
                 const options = {headers: {'Authorization': `Bearer ${data?.data.token}`}}
-                console.log(method)
+
                 if ((method === 'update_admin') && user && Object.keys(user).length > 0) {
-                  console.log('editing admin')
                   request = axios.put(API_URI+'/admins/'+ user.id, tmpValues, options)
                 }
                 else if (method === 'update_teacher' && user && Object.keys(user).length > 0) {
-                  console.log('editing teacher')
                   request = axios.put(API_URI+'/teachers/'+ user.id, tmpValues, options)
                 }
                 else if (method === 'add_teacher') {
-                  console.log('adding teacher')
                   request = axios.post(API_URI+'/teachers', tmpValues, options)
                 }
                 else if (method === 'add_admin') {
-                  console.log('adding admin')
                   request = axios.post(API_URI+'/admins', tmpValues, options)
                 }
                 else request = axios.post(API_URI+'/auth/register', tmpValues)
-                console.log('preposting ', tmpValues, 'with token', data?.data.token)
                 
                 request.then(async (res:AxiosResponse<UserResponse>)=> {
-                  console.log(res.data)
                   if (res.data?.message) {
                     Alert.alert("Form Error", res.data.message, [{text: 'Ok', style: 'cancel'}], {cancelable:true})
                   } else {
