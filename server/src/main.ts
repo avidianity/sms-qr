@@ -40,7 +40,10 @@ import { attendanceRoutes } from './routes/attendance.route';
     passport.use(
         new JwtStrategy(
             {
-                jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+                jwtFromRequest: ExtractJwt.fromExtractors([
+                    ExtractJwt.fromAuthHeaderAsBearerToken(),
+                    ExtractJwt.fromUrlQueryParameter('token'),
+                ]),
                 secretOrKey: config('jwt.key'),
             },
             async (payload, done) => {
