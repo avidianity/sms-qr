@@ -36,6 +36,10 @@ export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, '
     return <Splash text='Loading QR..'/>
   }
 
+  useEffect(()=>{
+    Brightness.setBrightnessAsync(1).then()
+  }, [])
+
   const DownloadAttendance = async () => {
     if (user) {
       FileSystem.downloadAsync(

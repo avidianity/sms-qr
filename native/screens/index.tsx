@@ -28,8 +28,8 @@ export function IndexScreen(props:NativeStackScreenProps<RootStackParamList, 'We
   useEffect(()=>{
     if (!isSuccess || !data) return
 
-    if (data.data.user.role === 'TEACHER') props.navigation.reset({index: 1, routes: [{ name: 'Teacher'}]})
-    else if (data.data.user.role === 'ADMIN') props.navigation.reset({index: 1, routes: [{ name: 'Admin'}]})
+    if (data.data.user.role === 'TEACHER') props.navigation.replace("Teacher")
+    else if (data.data.user.role === 'ADMIN') props.navigation.replace("Admin")
   }, [data, isSuccess])
 
   if (!data && isSuccess) {
