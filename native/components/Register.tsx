@@ -21,7 +21,11 @@ import { useAuth } from '../utils/GlobalContext';
 const passwordShape = yup
 .string()
 .min(8, ({ min }) => `Password must be at least ${min} characters`)
-.matches(strongPasswordExp, 'Need strong password (at least one symbol, number and uppercase letter).')
+.test(
+  'Need strong password (at least one symbol, number and uppercase letter).', 
+  'Need strong password (at least one symbol, number and uppercase letter).', 
+  (value)=>!strongPasswordExp.test(value!)
+)
 
 const registerValidationSchema = yup.object().shape({
   email: yup.string().email().required('Email is required.'),

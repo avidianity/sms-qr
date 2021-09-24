@@ -52,7 +52,7 @@ export function ScanQRScreen(props:NativeStackScreenProps<RootStackParamList, 'S
         }).then((res)=> {
           setPosting(false)
           ToastAndroid.show(`Successfully updated attendance for ${res.data.teacher.name}`, ToastAndroid.LONG)
-          props.navigation.goBack()
+          props.navigation.navigate('User', {user: res.data.teacher})
         })
       }, 1000)
     }
@@ -69,7 +69,7 @@ export function ScanQRScreen(props:NativeStackScreenProps<RootStackParamList, 'S
     </BarCodeScanner>
     )
   } else {
-    return <Splash text='Unable to access camera!'/>
+    return <Splash text='Waiting for camera permission...'/>
   }
 }
 

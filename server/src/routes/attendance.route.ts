@@ -7,6 +7,7 @@ import { makeAttendances, storage } from '../helpers';
 import { PrismaClient } from '@prisma/client';
 import dayjs from 'dayjs';
 import { admin } from '../middlewares/admin.middleware';
+import { makeAttendancesIndividual } from '../kin';
 
 const router = Router();
 
@@ -108,7 +109,7 @@ router.get('/:uuid/attendance.xlsx', async (req: Request, res: Response) => {
 /**
  * TODO
  */
-router.get('/self', teacher, async (req: Request, res: Response) => {
+router.get('/self', authenticate(), teacher, async (req: Request, res: Response) => {
     const user = req.user!;
 
     const client: PrismaClient = req.app.get('prisma');
@@ -126,11 +127,17 @@ router.get('/self', teacher, async (req: Request, res: Response) => {
         },
     });
 
-    const workbook = new Workbook();
+    const workbook = await makeAttendancesIndividual({...user, attendances}, user);
 
-    const buffer = await storage().read('template.xlsx');
+    const buffer = await workbook.xlsx.writeBuffer();
 
-    await workbook.xlsx.load(buffer);
+    return res
+        .setHeader('Content-Length', buffer.byteLength)
+        .setHeader(
+            'Content-Disposition',
+            `attachment; filename="${user.id}-attendance.xlsx"`
+        )
+        .send(buffer);
 });
 
 export const attendanceRoutes = router;

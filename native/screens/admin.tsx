@@ -11,6 +11,7 @@ import { Linking, ToastAndroid } from 'react-native';
 import { API_URI } from '@env';
 import * as FileSystem from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface IProps {
   onLogout(): {}
@@ -32,7 +33,7 @@ export function AdminScreen (props:NativeStackScreenProps<RootStackParamList, 'A
         FileSystem.documentDirectory+'attendance.xlsx',
         {
           headers: {
-            'Authorization': `Bearer ${data.data.token}`
+            'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
           }
         }
       ).then((res)=>{

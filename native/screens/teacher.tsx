@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StatusBar} from 'react-native';
+import { View, StatusBar, ToastAndroid} from 'react-native';
 import { Avatar, Text } from 'react-native-elements';
 import { useAuth } from '../utils/GlobalContext';
 import { AvatarText, CapitalizeFirstLetter } from '../utils/string';
@@ -16,6 +16,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import randomColor from 'randomcolor';
 import { useKeepAwake } from 'expo-keep-awake';
 import * as Brightness from 'expo-brightness';
+import { API_URI } from '@env';
+import * as FileSystem from 'expo-file-system';
+import * as IntentLauncher from 'expo-intent-launcher';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //Index2 is for teachers
 export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, 'Teacher'>) {
@@ -28,17 +32,30 @@ export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, '
   const [isDialOpen, setIsDialOpen] = useState(false)
   const user = data?.data.user
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Brightness.requestPermissionsAsync();
-      if (status === 'granted') {
-        Brightness.setSystemBrightnessAsync(1);
-      }
-    })();
-  }, []);
-
   if (qr === null || qr === undefined || !isSuccess || user === undefined) {
     return <Splash text='Loading QR..'/>
+  }
+
+  const DownloadAttendance = async () => {
+    if (user) {
+      FileSystem.downloadAsync(
+        API_URI+'/attendances/self',
+        FileSystem.documentDirectory+'self-attendance.xlsx',
+        {
+          headers: {
+            'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
+          }
+        }
+      ).then((res)=>{
+        FileSystem.getContentUriAsync(res.uri).then(cUri => {
+          IntentLauncher.startActivityAsync('android.intent.action.VIEW', {
+            data: cUri,
+            flags: 1,
+          });
+        });
+      })
+    }
+    else ToastAndroid.show('User not found!', ToastAndroid.SHORT)
   }
 
   return (
@@ -108,6 +125,13 @@ export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, '
           title="View Attendance"
           buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
           onPress={()=>props.navigation.navigate('User', {user})}
+        />
+        <SpeedDial.Action
+          icon={{ name: 'description', color: '#fff' }}
+          title="Self Attendance Sheet"
+          buttonStyle={{borderRadius: 32, backgroundColor: '#18a86b'}}
+          onPress={DownloadAttendance}
+          titleStyle={{paddingHorizontal: 6}}
         />
       </SpeedDial>
 
