@@ -46,12 +46,12 @@ export async function makeAttendancesIndividual(
     const month = now.get('month');
 
     // USER INFORMATION
-    worksheet.getCell('D1').value = user.uuid;
-    worksheet.getCell('D2').value = user.name;
+    worksheet.getCell('D1').value = teacher.uuid;
+    worksheet.getCell('D2').value = teacher.name;
     worksheet.getCell('D3').value = now.format('MMMM DD, YYYY hh:mm A');
-    worksheet.getCell('L1').value = user.number;
-    worksheet.getCell('L2').value = user.email;
-    worksheet.getCell('L3').value = user.role;
+    worksheet.getCell('L1').value = teacher.number;
+    worksheet.getCell('L2').value = teacher.email;
+    worksheet.getCell('L3').value = user.name;
 
     // CALENDAR
     worksheet.getCell('B5').value = `${Months[month]}, ${year}`;
