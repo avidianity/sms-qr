@@ -32,14 +32,14 @@ export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, '
   const [isDialOpen, setIsDialOpen] = useState(false)
   const user = data?.data.user
 
-  if (qr === null || qr === undefined || !isSuccess || user === undefined) {
-    return <Splash text='Loading QR..'/>
-  }
-
   useEffect(()=>{
     Brightness.setBrightnessAsync(1).then()
   }, [])
 
+  if (qr === null || qr === undefined || !isSuccess || user === undefined) {
+    return <Splash text='Loading QR..'/>
+  }
+  
   const DownloadAttendance = async () => {
     if (user) {
       FileSystem.downloadAsync(

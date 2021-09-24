@@ -14,7 +14,7 @@ import { Register } from '../components/Register';
 const Tab = createMaterialTopTabNavigator();
 
 export function IndexScreen(props:NativeStackScreenProps<RootStackParamList, 'Welcome'>) {
-  const { data, isSuccess } = useAuth(props)
+  const auth = useAuth(props)
 
   useEffect(()=> {
     async function asyncLogout() {
@@ -26,13 +26,13 @@ export function IndexScreen(props:NativeStackScreenProps<RootStackParamList, 'We
   }, [props.route.params])
 
   useEffect(()=>{
-    if (!isSuccess || !data) return
+    if (!auth.isSuccess || !auth.data) return
 
-    if (data.data.user.role === 'TEACHER') props.navigation.replace("Teacher")
-    else if (data.data.user.role === 'ADMIN') props.navigation.replace("Admin")
-  }, [data, isSuccess])
+    if (auth.data?.data.user.role === 'TEACHER') props.navigation.replace("Teacher")
+    else if (auth.data?.data.user.role === 'ADMIN') props.navigation.replace("Admin")
+  }, [auth])
 
-  if (!data && isSuccess) {
+  if (!auth.data && auth.isSuccess) {
     return (
       <Tab.Navigator screenOptions={{tabBarStyle:{display:'none'}}}>
         <Tab.Screen name='Login' component={Login}/>
