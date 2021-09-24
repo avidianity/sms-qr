@@ -67,18 +67,12 @@ router.post(
             where: {
                 userId: teacher.id,
                 createdAt: {
-                    lte: now
-                        .set('hours', -16)
-                        .set('seconds', 0)
-                        .set('minutes', 0)
-                        .set('milliseconds', 0)
-                        .toDate(),
-                    gte: now
-                        .set('hours', 8)
-                        .set('seconds', 0)
-                        .set('minutes', 0)
-                        .set('milliseconds', 0)
-                        .toDate(),
+                    gte: new Date(
+                        `${now.year()}-${now.month() + 1}-${now.date()}`
+                    ),
+                    lt: new Date(
+                        `${now.year()}-${now.month() + 1}-${now.date() + 1}`
+                    ),
                 },
             },
         });
