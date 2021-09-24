@@ -119,6 +119,7 @@ export async function makeAttendances(
             cell.style = {
                 ...cell.style,
                 fill: {
+                    ...cell.style.fill,
                     type: 'pattern',
                     pattern: 'solid',
                     fgColor: {

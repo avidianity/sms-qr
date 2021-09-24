@@ -57,7 +57,9 @@
     "react-qr-code": "^2.0.2",
     "react-query": "^3.23.2",
     "rn-fetch-blob": "^0.12.0",
-    "yup": "^0.32.9"
+    "yup": "^0.32.9",
+    "expo-brightness": "~9.2.2",
+    "expo-keep-awake": "~9.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

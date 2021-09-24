@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StatusBar} from 'react-native';
 import { Avatar, Text } from 'react-native-elements';
 import { useAuth } from '../utils/GlobalContext';
@@ -14,10 +14,12 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../App';
 import { LinearGradient } from 'expo-linear-gradient';
 import randomColor from 'randomcolor';
+import { useKeepAwake } from 'expo-keep-awake';
+import * as Brightness from 'expo-brightness';
 
 //Index2 is for teachers
 export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, 'Teacher'>) {
-  
+  useKeepAwake();
   const { data, logout } = useAuth(props);
   const [avatarColor] = useState(randomColor({luminosity: 'dark'}));
 
@@ -25,6 +27,15 @@ export function TeacherScreen(props:NativeStackScreenProps<RootStackParamList, '
   
   const [isDialOpen, setIsDialOpen] = useState(false)
   const user = data?.data.user
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Brightness.requestPermissionsAsync();
+      if (status === 'granted') {
+        Brightness.setSystemBrightnessAsync(1);
+      }
+    })();
+  }, []);
 
   if (qr === null || qr === undefined || !isSuccess || user === undefined) {
     return <Splash text='Loading QR..'/>
