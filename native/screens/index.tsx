@@ -1,121 +1,125 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useAuth } from '../utils/GlobalContext';
-import { Icon,  Text } from 'react-native-elements';
-import { Easing, StyleProp, StyleSheet, TextStyle, ToastAndroid, View } from "react-native"
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../App';
-import { LinearGradient } from 'expo-linear-gradient';
-import {Animated} from 'react-native';
-import { Login } from '../components/Login';
-import { Register } from '../components/Register';
+import React, { useEffect, useRef, useState } from "react";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { useAuth } from "../utils/GlobalContext";
+import { Icon, Text } from "react-native-elements";
+import {
+  Easing,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  ToastAndroid,
+  View,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../App";
+import { LinearGradient } from "expo-linear-gradient";
+import { Animated } from "react-native";
+import { Login } from "../components/Login";
+import { Register } from "../components/Register";
 
 const Tab = createMaterialTopTabNavigator();
 
-export function IndexScreen(props:NativeStackScreenProps<RootStackParamList, 'Welcome'>) {
-  const auth = useAuth(props)
+export function IndexScreen(
+  props: NativeStackScreenProps<RootStackParamList, "Welcome">
+) {
+  const auth = useAuth(props);
 
-  useEffect(()=> {
+  useEffect(() => {
     async function asyncLogout() {
-      ToastAndroid.show('Logged out successfully.', ToastAndroid.LONG)
-      await AsyncStorage.removeItem('token')
-    }  
+      ToastAndroid.show("Logged out successfully.", ToastAndroid.LONG);
+      await AsyncStorage.removeItem("token");
+    }
 
-    if (props?.route?.params?.method === 'logout') asyncLogout()
-  }, [props.route.params])
+    if (props?.route?.params?.method === "logout") asyncLogout();
+  }, [props.route.params]);
 
-  useEffect(()=>{
-    if (!auth.isSuccess || !auth.data) return
+  useEffect(() => {
+    if (!auth.isSuccess || !auth.data) return;
 
-    if (auth.data?.data.user.role === 'TEACHER') props.navigation.replace("Teacher")
-    else if (auth.data?.data.user.role === 'ADMIN') props.navigation.replace("Admin")
-  }, [auth])
+    if (auth.data?.data.user.role === "TEACHER")
+      props.navigation.replace("Teacher");
+    else if (auth.data?.data.user.role === "ADMIN")
+      props.navigation.replace("Admin");
+  }, [auth]);
 
   if (!auth.data && auth.isSuccess) {
     return (
-      <Tab.Navigator screenOptions={{tabBarStyle:{display:'none'}}}>
-        <Tab.Screen name='Login' component={Login}/>
-        <Tab.Screen name='Register' component={Register}/>
+      <Tab.Navigator screenOptions={{ tabBarStyle: { display: "none" } }}>
+        <Tab.Screen name="Login" component={Login} />
+        <Tab.Screen name="Register" component={Register} />
       </Tab.Navigator>
-    )
+    );
   }
-  
-  return <Splash text='SMS-QR' />
+
+  return <Splash text="SMS-QR" />;
 }
 
 interface ISplash {
-  text: string
-  textStyle?: StyleProp<TextStyle>
+  text: string;
+  textStyle?: StyleProp<TextStyle>;
 }
 
+export function Splash({ text, textStyle }: ISplash) {
+  const animation = useRef(new Animated.Value(0)).current;
 
-
-export function Splash(
-  {
-    text, 
-    textStyle
-  }:ISplash) 
-{
-  const animation = useRef(new Animated.Value(0)).current
-
-  useEffect(()=> {
+  useEffect(() => {
     const anim = Animated.loop(
       Animated.sequence([
         Animated.timing(animation, {
           toValue: -15,
           duration: 1000,
           easing: Easing.sin,
-          useNativeDriver: true
+          useNativeDriver: true,
         }),
         Animated.timing(animation, {
           toValue: 0,
           duration: 500,
           easing: Easing.bounce,
-          useNativeDriver: true
+          useNativeDriver: true,
         }),
       ])
-    )
+    );
 
-    
-    anim.start()
-
+    anim.start();
   }, []);
 
-  const trans={
+  const trans = {
     transform: [
       {
-        translateY: animation
-      }
-    ]
-  }
+        translateY: animation,
+      },
+    ],
+  };
 
   return (
-    <LinearGradient colors={['#f37335', '#18a86b']} style={{flex:1}}>
-      <View style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-      }}>
-        <Animated.View style={[SplashStyle.iconView, trans]} >
-          <Icon name='qrcode' type='fontisto' size={64} color='white'/>
+    <LinearGradient colors={["#f37335", "#18a86b"]} style={{ flex: 1 }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        <Animated.View style={[SplashStyle.iconView, trans]}>
+          <Icon name="qrcode" type="fontisto" size={64} color="white" />
         </Animated.View>
         <Text style={[textStyle, SplashStyle.textStyleDefault]}>{text}</Text>
       </View>
     </LinearGradient>
-  )
+  );
 }
 
 const SplashStyle = StyleSheet.create({
   iconView: {
-    marginBottom: 12
+    marginBottom: 12,
   },
 
   textStyleDefault: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     fontSize: 21,
-    fontFamily: ''
-  }
-})
+    fontFamily: "",
+  },
+});

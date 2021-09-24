@@ -1,1 +1,1 @@
-declare module "fiction-expo-restart"
+declare module "fiction-expo-restart";

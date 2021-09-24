@@ -11,11 +11,11 @@ export async function getMe() {
   if (asToken === null) return null
 
   try {
-    const get = await axios.get(API_URI+'/auth/check', {
+    const get = await axios.get<UserResponse>(API_URI+'/auth/check', {
       headers: {
         'Authorization': `Bearer ${asToken}`
       }
-    }) as AxiosResponse<UserResponse>
+    })
     return get
   } catch (err) {
     // Clear storage if invalid auth

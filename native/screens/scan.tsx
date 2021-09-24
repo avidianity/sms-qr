@@ -65,7 +65,18 @@ export function ScanQRScreen(props:NativeStackScreenProps<RootStackParamList, 'S
       onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
       style={styles.camera}
     >
-      <BarcodeMask  />
+      <View style={{flex: 1}}>
+        <BarcodeMask 
+          width={250}
+          height={250}
+          edgeBorderWidth={10}
+          animatedLineWidth={240}
+          
+        />
+        <View style={{flex: 1, flexGrow: 1}}>
+          <Text style={styles.bartext}>Please point the scanner into the QR code of the teacher.</Text>
+        </View>        
+      </View>
     </BarCodeScanner>
     )
   } else {
@@ -76,14 +87,21 @@ export function ScanQRScreen(props:NativeStackScreenProps<RootStackParamList, 'S
 const styles = StyleSheet.create({
   camera: {
     width: '100%',
-    height: '100%'
+    height: '100%',
+    flex: 1,
+    
   },
   buttonContainer: {
   },
   button: {
     
   },
-  text: {
-    color: 'white'
+  bartext: {
+    color: 'white',
+    marginTop: 'auto',
+    marginBottom: 32,
+    paddingHorizontal: 16,
+    fontWeight: 'bold',
+    textAlign: 'center'
   }
 })
