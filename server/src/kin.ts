@@ -74,7 +74,6 @@ export async function makeAttendancesIndividual(
     // SET PRESENT OR WEEKEND
     teacher.attendances.forEach((attendance)=>{
       const date = dayjs(attendance.createdAt);
-      console.log(firstDay+date.date())
       const cell = worksheet.getCell(CalendarCells[firstDay+date.date()]);
 
       const isWeekend = date.day() === 0 || date.day() === 6;
