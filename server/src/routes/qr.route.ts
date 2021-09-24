@@ -7,7 +7,7 @@ import { config, Crypto } from '../helpers';
 import { admin } from '../middlewares/admin.middleware';
 import authenticate from '../middlewares/authenticate.middleware';
 import { teacher } from '../middlewares/teacher.middleware';
-import validate from '../middlewares/validation.middleware';
+import validate from '../middlewares/validate.middleware';
 import 'express-async-errors';
 
 const router = Router();

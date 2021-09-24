@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 import { compare, hash } from 'bcrypt';
 import { config } from '../helpers';
 import { body } from 'express-validator';
-import validate from '../middlewares/validation.middleware';
+import validate from '../middlewares/validate.middleware';
 import authenticate from '../middlewares/authenticate.middleware';
 import { unique } from '../validators/unique.validator';
 import 'express-async-errors';

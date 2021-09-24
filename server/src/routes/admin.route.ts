@@ -4,7 +4,7 @@ import { Request, Response, Router } from 'express';
 import { body } from 'express-validator';
 import { v4 } from 'uuid';
 import authenticate from '../middlewares/authenticate.middleware';
-import validate from '../middlewares/validation.middleware';
+import validate from '../middlewares/validate.middleware';
 import { unique } from '../validators/unique.validator';
 import 'express-async-errors';
 
