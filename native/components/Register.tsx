@@ -91,8 +91,8 @@ export function Register(
   return (
     <FrontPageContainer bg={1}>
       <StatusBar style="dark" />
-      <ScrollView
-        contentContainerStyle={{
+      <View
+        style={{
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
@@ -194,8 +194,8 @@ export function Register(
                   })
                   .catch((err: Error) => {
                     Alert.alert(
-                      "DEV | " + err.name,
-                      err.message,
+                      "Error | " + err.name,
+                      "Something wrong happened. Error: " + err.message,
                       [
                         {
                           text: "Cancel",
@@ -323,7 +323,7 @@ export function Register(
             </Formik>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </FrontPageContainer>
   );
 }
