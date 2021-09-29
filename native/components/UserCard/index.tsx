@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { User } from "../../types";
 import {
   Avatar,
@@ -11,7 +11,7 @@ import {
 } from "react-native-elements";
 import { Card } from "react-native-elements";
 import { AvatarText, CapitalizeFirstLetter } from "../../utils/string";
-import { ToastAndroid, View } from "react-native";
+import { Alert, ToastAndroid, View } from "react-native";
 import randomColor from "randomcolor";
 import { NavigationHelpers } from "@react-navigation/native";
 import axios from "axios";
@@ -26,8 +26,11 @@ interface IProps {
 
 export function UserCard({ user, navigation, refetch }: IProps) {
   const [visible, setVisible] = useState(false);
-  const [deleteVisible, setDeleteVisible] = useState(false);
   const roleString = CapitalizeFirstLetter(user.role.toLowerCase());
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -35,54 +38,6 @@ export function UserCard({ user, navigation, refetch }: IProps) {
 
   return (
     <Fragment>
-      <Overlay
-        isVisible={deleteVisible}
-        onBackdropPress={() => setDeleteVisible(false)}
-        overlayStyle={{ padding: 24 }}
-      >
-        <Text style={{ paddingBottom: 16, fontSize: 24, fontWeight: "bold" }}>
-          Notice
-        </Text>
-        <Text style={{ paddingBottom: 24 }}>
-          Do you really want to delete{" "}
-          <Text style={{ fontWeight: "bold" }}>{user.name}</Text>?
-        </Text>
-        <Divider />
-        <View style={{ flexDirection: "row" }}>
-          <Button
-            onPress={async () => {
-              axios
-                .delete(`${API_URI}/${user.role}s/${user.id}`, {
-                  headers: {
-                    Authorization: `Bearer ${await AsyncStorage.getItem(
-                      "token"
-                    )}`,
-                  },
-                })
-                .then((res) => {
-                  ToastAndroid.show(
-                    `Succcessfully deleted ${user.role.toLowerCase()} ${
-                      user.name
-                    }.`,
-                    ToastAndroid.LONG
-                  );
-                  setVisible(false);
-                  refetch();
-                });
-            }}
-            title="Yes"
-            containerStyle={{ flex: 0.5, margin: 8 }}
-            type="clear"
-          />
-          <Button
-            title="No"
-            onPress={() => setDeleteVisible(false)}
-            containerStyle={{ flex: 0.5, margin: 8 }}
-            buttonStyle={{ backgroundColor: "#DC143C" }}
-          />
-        </View>
-      </Overlay>
-
       <Overlay
         isVisible={visible}
         onBackdropPress={toggleOverlay}
@@ -120,7 +75,42 @@ export function UserCard({ user, navigation, refetch }: IProps) {
           />
           <Button
             title={`Delete ${roleString}`}
-            onPress={() => setDeleteVisible(true)}
+            onPress={() => {
+              Alert.alert(
+                "Notice",
+                `Do you really want to delete ${user.name}?`,
+                [
+                  {
+                    text: "No",
+                    onPress: () => {},
+                    style: "cancel",
+                  },
+                  {
+                    text: "Yes",
+                    onPress: async () => {
+                      axios
+                        .delete(`${API_URI}/${user.role}s/${user.id}`, {
+                          headers: {
+                            Authorization: `Bearer ${await AsyncStorage.getItem(
+                              "token"
+                            )}`,
+                          },
+                        })
+                        .then((res) => {
+                          ToastAndroid.show(
+                            `Succcessfully deleted ${user.role.toLowerCase()} ${
+                              user.name
+                            }.`,
+                            ToastAndroid.LONG
+                          );
+                          setVisible(false);
+                          refetch();
+                        });
+                    },
+                  },
+                ]
+              );
+            }}
             icon={<Icon name="delete" size={24} color="white" />}
             buttonStyle={{ backgroundColor: "#DC143C", paddingVertical: 8 }}
             titleStyle={{ paddingHorizontal: 6 }}
