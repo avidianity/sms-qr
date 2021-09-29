@@ -90,7 +90,7 @@ export async function makeAttendances(
         'AG',
     ];
 
-    const year = now.format('MMMM');
+    const year = now.format('YYYY');
     const month = now.get('month');
 
     worksheet.getCell('W2').value = now.format('MMMM DD, YYYY hh:mm A');

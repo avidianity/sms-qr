@@ -39,6 +39,7 @@ export function AdminScreen(
           },
         }
       ).then((res) => {
+        console.log(res);
         FileSystem.getContentUriAsync(res.uri).then((cUri) => {
           IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
             data: cUri,

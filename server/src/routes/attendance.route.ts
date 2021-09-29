@@ -14,11 +14,7 @@ router.use(authenticate());
 router.get('/attendances', admin, async (req: Request, res: Response) => {
     const client: PrismaClient = req.app.get('prisma');
 
-    const user = await client.user.findFirst({
-        where: {
-            uuid: req.params.uuid,
-        },
-    });
+    const user = req.user!;
 
     if (user === null || user.role !== 'ADMIN') {
         return res.status(401).send({ message: 'Unauthorized.' });
