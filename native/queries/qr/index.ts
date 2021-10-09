@@ -1,14 +1,14 @@
 import { Token, User, UserResponse } from "../../types";
-import { API_URI } from "@env";
 import axios, { AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SERVER_API } from "../../utils/string";
 
 /* `{{base}}/auth/check` with token authentication */
 export async function getQR(user: Partial<User> | undefined) {
   if (!user) return null;
 
   try {
-    const get = (await axios.get(API_URI + "/qr/" + user.id, {
+    const get = (await axios.get(SERVER_API + "/qr/" + user.id, {
       headers: {
         Authorization: `Bearer ${await AsyncStorage.getItem("token")}`,
       },

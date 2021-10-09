@@ -4,9 +4,8 @@ import { Button, Input, Text } from "react-native-elements";
 import { formStyles } from "../styles/sxForm";
 import { FrontPageContainer } from "./FrontPageContainer";
 import { Formik } from "formik";
-import { API_URI, ENV } from "@env";
 import * as yup from "yup";
-import { CapitalizeFirstLetter } from "../utils/string";
+import { CapitalizeFirstLetter, SERVER_API } from "../utils/string";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LoginResponse, User, UserResponse } from "../types";
 import { phoneRegExp, strongPasswordExp } from "../utils/regex";
@@ -148,7 +147,7 @@ export function Register(
                   Object.keys(user).length > 0
                 ) {
                   request = axios.put(
-                    API_URI + "/admins/" + user.id,
+                    SERVER_API + "/admins/" + user.id,
                     tmpValues,
                     options
                   );
@@ -158,20 +157,27 @@ export function Register(
                   Object.keys(user).length > 0
                 ) {
                   request = axios.put(
-                    API_URI + "/teachers/" + user.id,
+                    SERVER_API + "/teachers/" + user.id,
                     tmpValues,
                     options
                   );
                 } else if (method === "add_teacher") {
                   request = axios.post(
-                    API_URI + "/teachers",
+                    SERVER_API + "/teachers",
                     tmpValues,
                     options
                   );
                 } else if (method === "add_admin") {
-                  request = axios.post(API_URI + "/admins", tmpValues, options);
+                  request = axios.post(
+                    SERVER_API + "/admins",
+                    tmpValues,
+                    options
+                  );
                 } else
-                  request = axios.post(API_URI + "/auth/register", tmpValues);
+                  request = axios.post(
+                    SERVER_API + "/auth/register",
+                    tmpValues
+                  );
 
                 request
                   .then(async (res: AxiosResponse<UserResponse>) => {

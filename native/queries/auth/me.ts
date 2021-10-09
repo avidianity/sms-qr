@@ -1,7 +1,7 @@
 import { Token, UserResponse } from "../../types";
-import { API_URI, ENV } from "@env";
 import axios, { AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SERVER_API } from "../../utils/string";
 
 /* `{{base}}/auth/check` with token authentication */
 export async function getMe() {
@@ -11,7 +11,7 @@ export async function getMe() {
   if (asToken === null) return null;
 
   try {
-    const get = await axios.get<UserResponse>(API_URI + "/auth/check", {
+    const get = await axios.get<UserResponse>(SERVER_API + "/auth/check", {
       headers: {
         Authorization: `Bearer ${asToken}`,
       },

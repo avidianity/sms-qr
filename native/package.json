@@ -45,6 +45,7 @@
     "react-native-dotenv": "^3.2.0",
     "react-native-elements": "^3.4.2",
     "react-native-file-viewer": "^2.1.4",
+    "react-native-gesture-handler": "^1.10.3",
     "react-native-loading-spinner-overlay": "^2.0.0",
     "react-native-pager-view": "5.0.12",
     "react-native-phone-number-input": "^2.1.0",

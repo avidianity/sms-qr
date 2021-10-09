@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, StatusBar, ToastAndroid } from "react-native";
 import { Avatar, Text } from "react-native-elements";
 import { useAuth } from "../utils/GlobalContext";
-import { AvatarText, CapitalizeFirstLetter } from "../utils/string";
+import { AvatarText, CapitalizeFirstLetter, SERVER_API } from "../utils/string";
 import WavyHeader1 from "../components/waves/WavyHeader1";
 import { FrontPageContainer } from "../components/FrontPageContainer";
 import { SpeedDial } from "react-native-elements";
@@ -16,7 +16,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import randomColor from "randomcolor";
 import { useKeepAwake } from "expo-keep-awake";
 import * as Brightness from "expo-brightness";
-import { API_URI } from "@env";
 import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -53,7 +52,7 @@ export function TeacherScreen(
   const DownloadAttendance = async () => {
     if (user) {
       FileSystem.downloadAsync(
-        API_URI + "/attendances/self",
+        SERVER_API + "/attendances/self",
         FileSystem.documentDirectory + "self-attendance.xlsx",
         {
           headers: {

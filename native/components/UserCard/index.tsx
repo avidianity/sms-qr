@@ -10,12 +10,15 @@ import {
   Divider,
 } from "react-native-elements";
 import { Card } from "react-native-elements";
-import { AvatarText, CapitalizeFirstLetter } from "../../utils/string";
+import {
+  AvatarText,
+  CapitalizeFirstLetter,
+  SERVER_API,
+} from "../../utils/string";
 import { Alert, ToastAndroid, View } from "react-native";
 import randomColor from "randomcolor";
 import { NavigationHelpers } from "@react-navigation/native";
 import axios from "axios";
-import { API_URI } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface IProps {
@@ -89,7 +92,7 @@ export function UserCard({ user, navigation, refetch }: IProps) {
                     text: "Yes",
                     onPress: async () => {
                       axios
-                        .delete(`${API_URI}/${user.role}s/${user.id}`, {
+                        .delete(`${SERVER_API}/${user.role}s/${user.id}`, {
                           headers: {
                             Authorization: `Bearer ${await AsyncStorage.getItem(
                               "token"

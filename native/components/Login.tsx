@@ -1,14 +1,12 @@
-import React, { useRef } from "react";
-import { Alert, View } from "react-native";
+import React from "react";
+import { Alert, ToastAndroid, View } from "react-native";
 import { Button, Input, Text } from "react-native-elements";
 import { formStyles } from "../styles/sxForm";
 import { FrontPageContainer } from "./FrontPageContainer";
 import { Formik } from "formik";
-import { API_URI, ENV } from "@env";
 import * as yup from "yup";
-import { CapitalizeFirstLetter } from "../utils/string";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LoginResponse, UserResponse } from "../types";
+import { CapitalizeFirstLetter, SERVER_API } from "../utils/string";
+import { UserResponse } from "../types";
 import { useAuth } from "../utils/GlobalContext";
 import { StatusBar } from "expo-status-bar";
 import { MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
@@ -35,7 +33,7 @@ export function Login(props: MaterialTopTabBarProps) {
               }}
               validationSchema={loginValidationSchema}
               onSubmit={(values, { setSubmitting }) => {
-                fetch(API_URI + "/auth/login", {
+                fetch(SERVER_API + "/auth/login", {
                   headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
@@ -62,22 +60,8 @@ export function Login(props: MaterialTopTabBarProps) {
                     setSubmitting(false);
                   })
                   .catch((err: Error) => {
-                    if (ENV === "dev") {
-                      Alert.alert(
-                        "DEV | " + err.name,
-                        err.message,
-                        [
-                          {
-                            text: "Cancel",
-                            style: "cancel",
-                          },
-                        ],
-                        {
-                          cancelable: true,
-                        }
-                      );
-                      setSubmitting(false);
-                    }
+                    ToastAndroid.show("Error!", ToastAndroid.SHORT);
+                    setSubmitting(false);
                   });
               }}
             >

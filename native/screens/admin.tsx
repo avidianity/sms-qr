@@ -8,10 +8,10 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../App";
 import { useAuth } from "../utils/GlobalContext";
 import { Linking, ToastAndroid } from "react-native";
-import { API_URI } from "@env";
 import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SERVER_API } from "../utils/string";
 
 interface IProps {
   onLogout(): {};
@@ -31,21 +31,40 @@ export function AdminScreen(
   const DownloadAttendance = async () => {
     if (user) {
       FileSystem.downloadAsync(
-        API_URI + "/attendances/attendances",
+        SERVER_API + "/attendances/attendances",
         FileSystem.documentDirectory + "attendance.xlsx",
         {
           headers: {
             Authorization: `Bearer ${await AsyncStorage.getItem("token")}`,
           },
         }
-      ).then((res) => {
-        FileSystem.getContentUriAsync(res.uri).then((cUri) => {
-          IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
-            data: cUri,
-            flags: 1,
-          });
+      )
+        .then((res) => {
+          FileSystem.getContentUriAsync(res.uri)
+            .then((cUri) => {
+              IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
+                data: cUri,
+                flags: 1,
+              }).catch((err: Error) => {
+                ToastAndroid.show(
+                  "No app can be used to open the file!",
+                  ToastAndroid.SHORT
+                );
+              });
+            })
+            .catch((err: Error) => {
+              ToastAndroid.show(
+                "Cannot open file! " + err.message,
+                ToastAndroid.SHORT
+              );
+            });
+        })
+        .catch((err: Error) => {
+          ToastAndroid.show(
+            "Cannot open file! " + err.message,
+            ToastAndroid.SHORT
+          );
         });
-      });
     } else ToastAndroid.show("User not found!", ToastAndroid.SHORT);
   };
 

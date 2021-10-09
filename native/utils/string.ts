@@ -1,3 +1,5 @@
+import Constants from "expo-constants";
+
 export function CapitalizeFirstLetter(str: string | undefined) {
   if (!str) return "Unknown";
 
@@ -11,3 +13,9 @@ export function AvatarText(str: string | undefined) {
   if (split[1]) ret = ret + split[1][0];
   return ret;
 }
+
+export const SERVER_API: String =
+  Constants.manifest?.extra!.SERVER_API.toString();
+
+export const ENVIRONMENT: String =
+  Constants.manifest?.extra!.ENVIRONMENT.toString();
