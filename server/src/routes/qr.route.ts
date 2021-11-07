@@ -9,12 +9,17 @@ import authenticate from '../middlewares/authenticate.middleware';
 import { teacher } from '../middlewares/teacher.middleware';
 import validate from '../middlewares/validate.middleware';
 import 'express-async-errors';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const router = Router();
 
 router.use(authenticate());
 
-router.get('/:id', teacher, async (req: Request, res: Response) => {
+router.get('/:id', async (req: Request, res: Response) => {
     const client: PrismaClient = req.app.get('prisma');
 
     const teacher = await client.user.findFirst({
@@ -84,7 +89,7 @@ router.post(
                 },
             });
         } else {
-            await client.attendance.update({
+            attendance = await client.attendance.update({
                 where: {
                     id: attendance.id,
                 },
@@ -110,15 +115,19 @@ router.post(
             await semaphore.send(
                 admins.map((admin) => admin.number),
                 `Teacher ${teacher.name} has scanned the QR at ${dayjs(
-                    attendance.createdAt
-                ).format('MMMM DD, YYYY hh:mm A')}`
+                    attendance.updatedAt
+                )
+                    .tz('Asia/Manila')
+                    .format('MMMM DD, YYYY hh:mm A')}`
             );
 
             await semaphore.send(
                 teacher.number,
                 `You (${teacher.name}) has scanned your QR at ${dayjs(
-                    attendance.createdAt
-                ).format('MMMM DD, YYYY hh:mm A')}`
+                    attendance.updatedAt
+                )
+                    .tz('Asia/Manila')
+                    .format('MMMM DD, YYYY hh:mm A')}`
             );
         } catch (error: any) {
             return res
