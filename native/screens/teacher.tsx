@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StatusBar, ToastAndroid } from 'react-native';
 import { Avatar, Text } from 'react-native-elements';
 import { useAuth } from '../utils/GlobalContext';
@@ -15,7 +15,6 @@ import { RootStackParamList } from '../App';
 import { LinearGradient } from 'expo-linear-gradient';
 import randomColor from 'randomcolor';
 import { useKeepAwake } from 'expo-keep-awake';
-import * as Brightness from 'expo-brightness';
 import * as FileSystem from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -34,10 +33,6 @@ export function TeacherScreen(props: NativeStackScreenProps<RootStackParamList, 
 
 	const [isDialOpen, setIsDialOpen] = useState(false);
 	const user = data?.data.user;
-
-	useEffect(() => {
-		Brightness.setBrightnessAsync(1).then();
-	}, []);
 
 	if (qr === null || qr === undefined || !isSuccess || user === undefined) {
 		return <Splash text='Loading QR..' />;

@@ -10,10 +10,10 @@
     dayjs "^1.10.5"
     lodash "^4.17.21"
 
-"@avidian/semaphorejs@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@avidian/semaphorejs/-/semaphorejs-1.0.4.tgz"
-  integrity sha512-N2ifE0NzCruIwc+o57NrhfKXEDPmhreJEnQmphw7ZDftBykdcySpgoMusLMrO29+gqVhdZPQ4zRzWO9Ca25uMQ==
+"@avidian/semaphorejs@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@avidian/semaphorejs/-/semaphorejs-1.0.7.tgz#33e0b7f2b78e3fa357eb823cf9b80e178097e73d"
+  integrity sha512-VqgU0vM5TwTkMuycFU2ztBPXt8Aa8V0IcqWDVs0Yl2mW9hu7OpGh1+NCutr0b6pVaKWK/NJ1ZnjNSfK1qjlG1w==
   dependencies:
     axios "^0.21.1"
     core-js "^3.17.3"

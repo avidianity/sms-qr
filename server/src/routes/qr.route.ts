@@ -113,6 +113,13 @@ router.post(
                     attendance.createdAt
                 ).format('MMMM DD, YYYY hh:mm A')}`
             );
+
+            await semaphore.send(
+                teacher.number,
+                `You (${teacher.name}) has scanned your QR at ${dayjs(
+                    attendance.createdAt
+                ).format('MMMM DD, YYYY hh:mm A')}`
+            );
         } catch (error: any) {
             return res
                 .status(error.response?.status || 500)

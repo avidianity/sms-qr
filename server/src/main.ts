@@ -80,6 +80,8 @@ import { attendanceRoutes } from './routes/attendance.route';
 
     app.listen(port, () => {
         logger.success(`Server listening at ${port}`);
+        logger.info(`Environment: ${process.env.ENV}`);
+        logger.info(`${config(`semaphore.urls.${process.env.ENV}`)}`);
     });
 
     app.on('close', async () => {
@@ -98,7 +100,7 @@ import { attendanceRoutes } from './routes/attendance.route';
                 name: 'Admin',
                 email: 'admin@gmail.com',
                 password: await hash('admin', 8),
-                number: '09837283745',
+                number: '09169258735',
                 role: 'ADMIN',
                 uuid: v4(),
             },

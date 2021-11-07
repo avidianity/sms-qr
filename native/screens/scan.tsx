@@ -59,8 +59,9 @@ export function ScanQRScreen(props: NativeStackScreenProps<RootStackParamList, '
 						ToastAndroid.show(`Successfully updated attendance for ${res.data.teacher.name}`, ToastAndroid.LONG);
 						props.navigation.navigate('User', { user: res.data.teacher });
 					})
-					.catch((err: Error) => {
+					.catch((err) => {
 						setPosting(false);
+						console.log(err.response);
 						ToastAndroid.show(`Unable to post attendance for teacher. Error: ${err.message}`, ToastAndroid.LONG);
 					});
 			}, 1000);

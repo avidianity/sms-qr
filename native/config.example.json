@@ -1,4 +1,4 @@
 {
-	"API_URI": "http://ip-address:port",
+	"API_URI": "https://sms-qr-api.tk",
 	"ENV": "dev"
 }
