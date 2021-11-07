@@ -18,7 +18,6 @@ services:
     environment:
       PORT: 8000
       DB_URL: 'postgresql://postgres:secret@smsqr-db:5432/smsqr'
-      SEMAPHORE_TOKEN: null
       SEMAPHORE_DEV_SERVER: http://smsqr-sms:3535
       SEMAPHORE_PROD_SERVER: https://api.semaphore.com/api/v4
   database:

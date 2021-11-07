@@ -1,0 +1,4 @@
+{
+	"API_URI": "http://ip-address:port",
+	"ENV": "dev"
+}
