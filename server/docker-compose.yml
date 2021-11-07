@@ -19,7 +19,7 @@ services:
       PORT: 8000
       DB_URL: 'postgresql://postgres:secret@smsqr-db:5432/smsqr'
       SEMAPHORE_DEV_SERVER: http://smsqr-sms:3535
-      TZ: UTC
+      TZ: Asia/Manila
   database:
     container_name: smsqr-db
     image: postgres:11.4
@@ -28,8 +28,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: smsqr
-      TZ: UTC
-      PGTZ: UTC
+      TZ: Asia/Manila
+      PGTZ: Asia/Manila
     volumes:
       - smsqr-database:/var/lib/postgresql/data
     ports:

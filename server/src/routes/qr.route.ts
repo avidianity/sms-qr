@@ -6,14 +6,8 @@ import { body } from 'express-validator';
 import { config, Crypto } from '../helpers';
 import { admin } from '../middlewares/admin.middleware';
 import authenticate from '../middlewares/authenticate.middleware';
-import { teacher } from '../middlewares/teacher.middleware';
 import validate from '../middlewares/validate.middleware';
 import 'express-async-errors';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 const router = Router();
 
@@ -116,18 +110,14 @@ router.post(
                 admins.map((admin) => admin.number),
                 `Teacher ${teacher.name} has scanned the QR at ${dayjs(
                     attendance.updatedAt
-                )
-                    .tz('Asia/Manila')
-                    .format('MMMM DD, YYYY hh:mm A')}`
+                ).format('MMMM DD, YYYY hh:mm A')}`
             );
 
             await semaphore.send(
                 teacher.number,
                 `You (${teacher.name}) has scanned your QR at ${dayjs(
                     attendance.updatedAt
-                )
-                    .tz('Asia/Manila')
-                    .format('MMMM DD, YYYY hh:mm A')}`
+                ).format('MMMM DD, YYYY hh:mm A')}`
             );
         } catch (error: any) {
             return res

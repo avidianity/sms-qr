@@ -16,6 +16,14 @@ import { hash } from 'bcrypt';
 import { v4 } from 'uuid';
 import { errorHandler } from './middlewares/error-handler.middleware';
 import { attendanceRoutes } from './routes/attendance.route';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+dayjs.tz.setDefault(process.env.TZ);
 
 (async () => {
     const logger = getLogger();
@@ -34,6 +42,12 @@ import { attendanceRoutes } from './routes/attendance.route';
     const client = new PrismaClient();
 
     await client.$connect();
+
+    client.$use(async (params, next) => {
+        const result = await next(params);
+        logger.info(`[database]`, result);
+        return result;
+    });
 
     app.set('prisma', client);
 

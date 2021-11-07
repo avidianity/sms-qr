@@ -4,11 +4,6 @@ import { FilesystemInterface } from './interfaces/filesystem.interface';
 import { LoggerInterface } from './interfaces/logger.interface';
 import { Workbook } from 'exceljs';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 export function storage(): FilesystemInterface {
     const driver = config('filesystem.driver');
@@ -44,7 +39,7 @@ export async function makeAttendances(
 
     const worksheet = workbook.getWorksheet('Attendance');
 
-    const now = dayjs().tz('Asia/Manila');
+    const now = dayjs();
 
     const months = [
         'January',
@@ -274,7 +269,7 @@ export async function makeAttendancesIndividual(
 
     const worksheet = workbook.getWorksheet('Attendance');
 
-    const now = dayjs().tz('Asia/Manila');
+    const now = dayjs();
 
     const year = now.format('YYYY');
     const month = now.get('month');

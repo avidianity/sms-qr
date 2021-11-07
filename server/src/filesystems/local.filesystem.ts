@@ -3,6 +3,7 @@ import {
     readFile,
     readFileSync,
     writeFile,
+    WriteFileOptions,
     writeFileSync,
 } from 'fs';
 import { resolve as pathResolve } from 'path';
@@ -27,10 +28,14 @@ export class LocalFilesystem implements FilesystemInterface {
         return readFileSync(pathResolve(this.path, path.toString()));
     }
 
-    write(path: PathOrFileDescriptor, data: string | NodeJS.ArrayBufferView) {
+    write(
+        path: PathOrFileDescriptor,
+        data: string | NodeJS.ArrayBufferView,
+        options?: WriteFileOptions
+    ) {
         const finalPath = pathResolve(this.path, path.toString());
         return new Promise<string>((resolve, reject) => {
-            writeFile(finalPath, data, {}, (error) => {
+            writeFile(finalPath, data, options || {}, (error) => {
                 if (error) {
                     return reject(error);
                 }
@@ -42,10 +47,11 @@ export class LocalFilesystem implements FilesystemInterface {
 
     writeSync(
         path: PathOrFileDescriptor,
-        data: string | NodeJS.ArrayBufferView
+        data: string | NodeJS.ArrayBufferView,
+        options?: WriteFileOptions
     ) {
         const finalPath = pathResolve(this.path, path.toString());
-        writeFileSync(finalPath, data);
+        writeFileSync(finalPath, data, options);
         return finalPath;
     }
 }
