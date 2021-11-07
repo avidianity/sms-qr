@@ -185,12 +185,7 @@ export class Crypto {
         const driver = config('encryption.driver');
         const cipher = config(`encryption.drivers.${driver}`);
 
-        return cipher
-            .encrypt(
-                typeof data === 'string' ? data : JSON.stringify(data),
-                key
-            )
-            .toString();
+        return cipher.encrypt(JSON.stringify(data), key).toString();
     }
 
     static decrypt<T = any>(payload: string): T {

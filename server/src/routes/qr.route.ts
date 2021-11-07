@@ -106,12 +106,18 @@ router.post(
             baseUrl: config(`semaphore.urls.${env}`),
         });
 
-        await semaphore.send(
-            admins.map((admin) => admin.number),
-            `Teacher ${teacher.name} has scanned the QR at ${dayjs(
-                attendance.createdAt
-            ).format('MMMM DD, YYYY hh:mm A')}`
-        );
+        try {
+            await semaphore.send(
+                admins.map((admin) => admin.number),
+                `Teacher ${teacher.name} has scanned the QR at ${dayjs(
+                    attendance.createdAt
+                ).format('MMMM DD, YYYY hh:mm A')}`
+            );
+        } catch (error: any) {
+            return res
+                .status(error.response?.status || 500)
+                .json(error.toObject());
+        }
 
         return res.status(201).json({ attendance, teacher });
     }
